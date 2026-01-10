@@ -3532,7 +3532,13 @@ do
 			NewPlayer.BorderColor3 = Color3.fromRGB(80,80,80)
 			NewPlayer.BorderSizePixel = 1
 			NewPlayer.Size = UDim2.new(1, 0, 0, 360)
-			NewPlayer.Parent = Playerlist.Page.Elements.Main
+			if Playerlist.Page.Elements.Left then
+				NewPlayer.Parent = Playerlist.Page.Elements.Left
+			elseif Playerlist.Page.Elements.Main then
+				NewPlayer.Parent = Playerlist.Page.Elements.Main
+			else
+				NewPlayer.Parent = Playerlist.Page.Window.Elements.Holder
+			end
 			
 			local Outline4 = Instance.new("Frame")
 			Outline4.Name = "Outline"
@@ -4604,7 +4610,7 @@ local Misc = Window:Page({Name = "Misc"})
 local Players = Window:Page({Name = "Players"})
 local Settings = Window:Page({Name = "Settings"})
 -- Aiming Features
-do
+do -- Aiming Features
 	local TargetSelectionSection = Aiming:Section({Name = "Target Selection"})
 	local AimAssistSection = Aiming:Section({Name = "Aim Assist", Side = "Right"})
 	local SilentAimSection = Aiming:Section({Name = "Silent Aim"})
@@ -4614,19 +4620,19 @@ do
 	local TargetSelectedKeybind = TargetSelectionSection:Keybind({Name = "Aiming", Default = Enum.KeyCode.None, Flag = "target_selected_bind"})
 	local AutoSelectToggle = TargetSelectionSection:Toggle({Name = "Auto Select", Flag = "auto_select"})
 	local TargetSelectorDelay = TargetSelectionSection:Slider({Name = "Delay", Min = 0, Max = 1000, Default = 40, Suffix = "ms", Flag = "target_selector_refresh_time"})
-	local TargetSelectorFOV = TargetSelectionSection:Slider({Name = "Fov", Min = 0, Max = 100, Default = 100, Suffix = "°", Flag = "target_selector_fov"})
-	local TargetSelectedChecks = TargetSelectionSection:List({Name = "Checks", Options = {"Knocked", "ForceField"}, Multi = true, Flag = "target_selected_checks"})
+	local TargetSelectorFOV = TargetSelectionSection:Slider({Name = "FOV", Min = 0, Max = 500, Default = 100, Suffix = "°", Flag = "target_selector_fov"})
+	local TargetSelectedChecks = TargetSelectionSection:List({Name = "Checks", Options = {"Knocked", "ForceField", "Friend", "Godded", "Visible"}, Multi = true, Flag = "target_selected_checks"})
 	local LookAtToggle = TargetSelectionSection:Toggle({Name = "Look At", Flag = "look_at"})
 	local TargetSpectateToggle = TargetSelectionSection:Toggle({Name = "Spectate", Flag = "spectate"})
 	local TargetAutoStompToggle = TargetSelectionSection:Toggle({Name = "Auto Stomp", Flag = "target_auto_stomp"})
 	local TargetSnapLineToggle = TargetSelectionSection:Toggle({Name = "Tracer", Flag = "snap_line"})
-	local TargetSnapLineColor = TargetSelectionSection:Colorpicker({Name = "Tracer Inline", Default = Color3.fromRGB(186, 171, 255), Flag = "snap_line_color"})
-	local TargetSnapLineThickness = TargetSelectionSection:Slider({Name = "Thickness", Min = 1, Max = 5, Default = 1, Suffix = "px", Flag = "target_snap_line_thickness"})
+	local TargetSnapLineColor = TargetSelectionSection:Colorpicker({Name = "Tracer Color", Default = Color3.fromRGB(186, 171, 255), Flag = "snap_line_color"})
+	local TargetSnapLineThickness = TargetSelectionSection:Slider({Name = "Tracer Thickness", Min = 1, Max = 10, Default = 1, Suffix = "px", Flag = "target_snap_line_thickness"})
 	local TargetBoundingBoxToggle = TargetSelectionSection:Toggle({Name = "Bounding Box", Flag = "target_bounding_box"})
-	local TargetBoundingBoxColor = TargetSelectionSection:Colorpicker({Name = "Bounding Box Color", Default = Color3.fromRGB(0, 0, 0), Flag = "target_bounding_box_settings"})
+	local TargetBoundingBoxOutlineColor = TargetSelectionSection:Colorpicker({Name = "Bounding Box Outline", Default = Color3.fromRGB(255, 255, 255), Flag = "target_bounding_box_outline"})
 	local TargetBoundingBoxFillToggle = TargetSelectionSection:Toggle({Name = "Fill", Flag = "target_bounding_box_fill"})
-	local TargetBoundingBoxFillColor = TargetSelectionSection:Colorpicker({Name = "Bounding Box Fill", Default = Color3.fromRGB(186, 171, 255), Flag = "bounding_box_fill_settings"})
-	local TargetBoundingBoxMaterial = TargetSelectionSection:List({Name = "Material", Options = {"ForceField", "Neon", "Plastic"}, Default = "ForceField", Flag = "target_bounding_box_material"})
+	local TargetBoundingBoxFillColor = TargetSelectionSection:Colorpicker({Name = "Bounding Box Fill", Default = Color3.fromRGB(186, 171, 255), Alpha = 0.3, Flag = "bounding_box_fill_settings"})
+	local TargetBoundingBoxMaterial = TargetSelectionSection:List({Name = "Material", Options = {"ForceField", "Neon", "Plastic", "Glass"}, Default = "ForceField", Flag = "target_bounding_box_material"})
 	
 	-- Aim Assist
 	local AimAssistToggle = AimAssistSection:Toggle({Name = "Aim Assist", Flag = "aim_assist"})
@@ -5038,7 +5044,10 @@ do -- Misc Features (Movement only, Combat and Other moved to Rage and Visuals)
 	end)
 end
 --
-Players:PlayerList({})
+do -- Players Tab
+	local PlayerListSection = Players:Section({Name = "Player List"})
+	Players:PlayerList({})
+end
 --
 do -- Visuals
 	-- Left Column Sections
