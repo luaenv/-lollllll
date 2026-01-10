@@ -1,5 +1,11 @@
 local Library = {};
 do
+	if not Color3 then
+		error("Roblox Color3 API not available")
+	end
+	if not Enum then
+		error("Roblox Enum API not available")
+	end
 	Library = {
 		Open = true;
 		Accent = Color3.fromRGB(186, 171, 255);
@@ -79,6 +85,11 @@ do
 	Library.__index = Library
 	Library.Pages.__index = Library.Pages
 	Library.Sections.__index = Library.Sections
+	
+	if not game then
+		error("Roblox game API not available")
+	end
+	
 	local LocalPlayer = game:GetService('Players').LocalPlayer;
 	local TweenService = game:GetService("TweenService");
 	local UserInputService = game:GetService("UserInputService");
@@ -88,21 +99,25 @@ do
 		Y = 0
 	}
 	
-	local mouseMoveEvent = Instance.new("BindableEvent")
-	Mouse.Move = mouseMoveEvent.Event
-	
-	UserInputService.InputChanged:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseMovement then
-			local mouseLocation = UserInputService:GetMouseLocation()
-			Mouse.X = mouseLocation.X
-			Mouse.Y = mouseLocation.Y
-			mouseMoveEvent:Fire(input)
-		end
-	end)
-	
-	local initialMouseLocation = UserInputService:GetMouseLocation()
-	Mouse.X = initialMouseLocation.X
-	Mouse.Y = initialMouseLocation.Y
+	if Instance and UserInputService then
+		local mouseMoveEvent = Instance.new("BindableEvent")
+		Mouse.Move = mouseMoveEvent.Event
+		
+		UserInputService.InputChanged:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseMovement then
+				local mouseLocation = UserInputService:GetMouseLocation()
+				Mouse.X = mouseLocation.X
+				Mouse.Y = mouseLocation.Y
+				mouseMoveEvent:Fire(input)
+			end
+		end)
+		
+		local initialMouseLocation = UserInputService:GetMouseLocation()
+		Mouse.X = initialMouseLocation.X
+		Mouse.Y = initialMouseLocation.Y
+	else
+		Mouse.Move = UserInputService and UserInputService.InputChanged or (function() end)
+	end
 
 	do
 		function Library:Connection(Signal, Callback)
