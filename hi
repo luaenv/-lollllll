@@ -4535,11 +4535,22 @@ local Utility = Library.Utility
 
 local Bodyparts = {}
 
-for i,v in next, game.Players.LocalPlayer.Character:GetChildren() do 
-	if v:IsA("BasePart") then 
-		table.insert(Bodyparts, v.Name)
-	end 
+local function updateBodyparts()
+	Bodyparts = {}
+	local character = game.Players.LocalPlayer.Character
+	if character then
+		for i,v in next, character:GetChildren() do 
+			if v:IsA("BasePart") then 
+				table.insert(Bodyparts, v.Name)
+			end 
+		end
+	end
 end
+
+updateBodyparts()
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+	updateBodyparts()
+end)
 
 -- Main UI Window
 local Window = Library:Window({Name = "bit.tech", Amount = 7})
