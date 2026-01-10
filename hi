@@ -1,9 +1,11 @@
+
 --
 local Library = {};
 do
 	Library = {
 		Open = true;
-		Accent = Color3.fromRGB(147, 112, 219);
+		Accent = Color3.fromRGB(186, 171, 255);
+		Directory = "bit_tech";
 		PageAmount = 0;
 		Pages = {};
 		Sections = {};
@@ -4599,86 +4601,49 @@ local Players = Window:Page({Name = "Players"})
 local Settings = Window:Page({Name = "Settings"})
 -- Legit Features
 do
-	local LegitSection = Page:Section({Name = "Aim Assist"})
-	local SilentAimSection = Page:Section({Name = "Silent Aim", Side = "Right"})
+	local TargetSelectionSection = Page:Section({Name = "Target Selection"})
+	local LegitSection = Page:Section({Name = "Aim Assist", Side = "Right"})
+	local SilentAimSection = Page:Section({Name = "Silent Aim"})
+	
+	-- Target Selection
+	local TargetSelectedToggle = TargetSelectionSection:Toggle({Name = "Enabled", Flag = "target_selected"})
+	local TargetSelectedKeybind = TargetSelectionSection:Keybind({Name = "Aiming", Default = Enum.KeyCode.None, Flag = "target_selected_bind"})
+	local AutoSelectToggle = TargetSelectionSection:Toggle({Name = "Auto Select", Flag = "auto_select"})
+	local TargetSelectorDelay = TargetSelectionSection:Slider({Name = "Delay", Min = 0, Max = 1000, Default = 40, Suffix = "ms", Flag = "target_selector_refresh_time"})
+	local TargetSelectorFOV = TargetSelectionSection:Slider({Name = "Fov", Min = 0, Max = 100, Default = 100, Suffix = "°", Flag = "target_selector_fov"})
+	local TargetSelectedChecks = TargetSelectionSection:List({Name = "Checks", Options = {"Knocked", "ForceField"}, Multi = true, Flag = "target_selected_checks"})
+	local LookAtToggle = TargetSelectionSection:Toggle({Name = "Look At", Flag = "look_at"})
+	local TargetSpectateToggle = TargetSelectionSection:Toggle({Name = "Spectate", Flag = "spectate"})
+	local TargetAutoStompToggle = TargetSelectionSection:Toggle({Name = "Auto Stomp", Flag = "target_auto_stomp"})
+	local TargetSnapLineToggle = TargetSelectionSection:Toggle({Name = "Tracer", Flag = "snap_line"})
+	local TargetSnapLineColor = TargetSelectionSection:Colorpicker({Name = "Tracer Inline", Default = Color3.fromRGB(186, 171, 255), Flag = "snap_line_color"})
+	local TargetSnapLineThickness = TargetSelectionSection:Slider({Name = "Thickness", Min = 1, Max = 5, Default = 1, Suffix = "px", Flag = "target_snap_line_thickness"})
+	local TargetBoundingBoxToggle = TargetSelectionSection:Toggle({Name = "Bounding Box", Flag = "target_bounding_box"})
+	local TargetBoundingBoxColor = TargetSelectionSection:Colorpicker({Name = "Bounding Box Color", Default = Color3.fromRGB(0, 0, 0), Flag = "target_bounding_box_settings"})
+	local TargetBoundingBoxFillToggle = TargetSelectionSection:Toggle({Name = "Fill", Flag = "target_bounding_box_fill"})
+	local TargetBoundingBoxFillColor = TargetSelectionSection:Colorpicker({Name = "Bounding Box Fill", Default = Color3.fromRGB(186, 171, 255), Flag = "bounding_box_fill_settings"})
+	local TargetBoundingBoxMaterial = TargetSelectionSection:List({Name = "Material", Options = {"ForceField", "Neon", "Plastic"}, Default = "ForceField", Flag = "target_bounding_box_material"})
 	
 	-- Aim Assist
-	local AimAssistToggle = LegitSection:Toggle({Name = "Aim Assist"})
-	local AimAssistSmoothing = LegitSection:Slider({Name = "Smoothing", Min = 0, Max = 100, Default = 1, Suffix = "%"})
-	local AimAssistAdjustJump = LegitSection:Toggle({Name = "Adjust For Jumping"})
-	local AimAssistHitPart = LegitSection:List({Name = "Hit Part", Options = {"HumanoidRootPart", "Head", "UpperTorso", "LowerTorso"}, Default = "HumanoidRootPart"})
-	local AimAssistAirPart = LegitSection:List({Name = "Air Part", Options = {"HumanoidRootPart", "Head", "UpperTorso", "LowerTorso", "RightFoot", "LeftFoot"}, Default = "RightFoot"})
-	local AimAssistPrediction = LegitSection:Slider({Name = "Prediction", Min = 0, Max = 1, Default = 0.1413, Decimals = 3})
+	local AimAssistToggle = LegitSection:Toggle({Name = "Aim Assist", Flag = "aim_assist"})
+	local AimAssistSmoothing = LegitSection:Slider({Name = "Smoothing", Min = 0, Max = 1, Default = 0.01, Decimals = 2, Suffix = "", Flag = "smoothing_factor"})
+	local AimAssistAdjustJump = LegitSection:Toggle({Name = "Adjust For Jumping", Flag = "adjust_for_jumping"})
+	local AimAssistAirPart = LegitSection:List({Name = "Air Part", Options = {"Feet", "Hrp", "Arms", "Legs", "Torso", "Head"}, Default = {"RightFoot"}, Multi = true, Flag = "aim_assist_air_bone"})
+	local AimAssistHitPart = LegitSection:List({Name = "Hit Part", Options = {"Feet", "Hrp", "Arms", "Legs", "Torso", "Head"}, Default = {"Torso"}, Multi = true, Flag = "aim_assist_bone"})
+	local AimAssistVelocityType = LegitSection:List({Name = "Prediction Type", Options = {"Velocity", "Recalculation"}, Default = "Velocity", Flag = "aim_assist_velocity_type"})
+	local AimAssistAutoPrediction = LegitSection:Toggle({Name = "Auto Prediction", Flag = "aim_assist_auto_prediction"})
+	local AimAssistPingFactor = LegitSection:Slider({Name = "Ping Factor", Min = 0, Max = 1500, Default = 1500, Flag = "aim_assist_ping_factor"})
+	local AimAssistManualPrediction = LegitSection:Textbox({Name = "Manual Prediction", Default = "0.1413", Flag = "aim_assist_prediction"})
 	
 	-- Silent Aim
-	local SilentAimToggle = SilentAimSection:Toggle({Name = "Silent Aim"})
-	local SilentAimHitPart = SilentAimSection:List({Name = "Hit Part", Options = {"HumanoidRootPart", "Head", "UpperTorso", "LowerTorso"}, Default = "HumanoidRootPart"})
-	local SilentAimAirPart = SilentAimSection:List({Name = "Air Part", Options = {"HumanoidRootPart", "Head", "UpperTorso", "LowerTorso", "RightFoot", "LeftFoot"}, Default = "RightFoot"})
-	local SilentAimPrediction = SilentAimSection:Slider({Name = "Prediction", Min = 0, Max = 1, Default = 0.1413, Decimals = 3})
+	local SilentAimToggle = SilentAimSection:Toggle({Name = "Enabled", Flag = "silent_aim"})
+	local SilentAimVelocityType = SilentAimSection:List({Name = "Prediction Type", Options = {"Recalculation", "Velocity"}, Default = "Velocity", Flag = "silent_aim_velocity_type"})
+	local SilentAimAutoPrediction = SilentAimSection:Toggle({Name = "Auto Prediction", Flag = "silent_use_auto_prediction"})
+	local SilentAimPingFactor = SilentAimSection:Slider({Name = "Ping Factor", Min = 0, Max = 500, Default = 500, Suffix = "", Flag = "silent_ping_factor"})
+	local SilentAimBone = SilentAimSection:List({Name = "Aim Bone", Options = {"Feet", "Hrp", "Arms", "Legs", "Torso", "Head"}, Default = {"Hrp"}, Multi = true, Flag = "silent_aim_bone"})
+	local SilentAimAirBone = SilentAimSection:List({Name = "Air Bone", Options = {"Feet", "Hrp", "Arms", "Legs", "Torso", "Head"}, Default = {"Feet"}, Multi = true, Flag = "silent_aim_air_bone"})
+	local SilentAimManualPrediction = SilentAimSection:Textbox({Name = "Manual Prediction", Default = "0.1413", Flag = "silent_manual_prediction"})
 	
-	-- Aim Assist Implementation
-	local target = nil
-	local aimAssistActive = false
-	
-	AimAssistToggle.Callback = function(state)
-		aimAssistActive = state
-	end
-	
-	game:GetService("RunService").Heartbeat:Connect(function()
-		if aimAssistActive and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-			local closestPlayer = nil
-			local closestDistance = math.huge
-			local mouse = game.Players.LocalPlayer:GetMouse()
-			
-			for _, player in pairs(game.Players:GetPlayers()) do
-				if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-					local rootPart = player.Character.HumanoidRootPart
-					local screenPos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(rootPart.Position)
-					
-					if onScreen then
-						local distance = (Vector2.new(screenPos.X, screenPos.Y) - Vector2.new(mouse.X, mouse.Y)).Magnitude
-						if distance < closestDistance then
-							closestDistance = distance
-							closestPlayer = player
-						end
-					end
-				end
-			end
-			
-			if closestPlayer and closestPlayer.Character then
-				target = closestPlayer
-				local hitPart = closestPlayer.Character:FindFirstChild(Library.Flags[AimAssistHitPart.Flag] or "HumanoidRootPart")
-				if hitPart then
-					local smoothing = Library.Flags[AimAssistSmoothing.Flag] / 100
-					local prediction = Library.Flags[AimAssistPrediction.Flag] or 0.1413
-					local velocity = hitPart.AssemblyLinearVelocity
-					local targetPos = hitPart.Position + (velocity * prediction)
-					
-					local camera = workspace.CurrentCamera
-					camera.CFrame = camera.CFrame:Lerp(CFrame.new(camera.CFrame.Position, targetPos), (100 - smoothing) / 100)
-				end
-			end
-		end
-	end)
-	
-	-- Silent Aim Hook (simplified - only if hookmetamethod exists)
-	if hookmetamethod then
-		local oldNamecall
-		oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
-			if SilentAimToggle.Toggled and self.Name == "MainEvent" then
-				local args = {...}
-				if getnamecallmethod() == "FireServer" and args[1] == "UpdateMousePosI2" and target and target.Character then
-					local hitPart = target.Character:FindFirstChild(Library.Flags[SilentAimHitPart.Flag] or "HumanoidRootPart")
-					if hitPart then
-						local prediction = Library.Flags[SilentAimPrediction.Flag] or 0.1413
-						local velocity = hitPart.AssemblyLinearVelocity
-						args[2] = hitPart.Position + (velocity * prediction)
-					end
-				end
-			end
-			return oldNamecall(self, ...)
-		end)
-	end
 end
 --
 do -- Rage Features
@@ -4697,9 +4662,19 @@ do -- Rage Features
 	local DesyncZ = DesyncSection:Toggle({Name = "Z Offset"})
 	local DesyncZAmount = DesyncSection:Slider({Name = "Z Amount", Min = -100, Max = 100, Default = 0})
 	
-	local DesyncVisualize = DesyncOtherSection:Toggle({Name = "Visualize"})
-	local DesyncChamColor = DesyncOtherSection:Colorpicker({Name = "Cham Color", Default = Color3.fromRGB(255, 0, 0)})
+	local DesyncVisualize = DesyncOtherSection:Toggle({Name = "Visualize Hrp Spoofer", Default = true})
+	local DesyncChamColor = DesyncOtherSection:Colorpicker({Name = "Visualizer Color", Default = Color3.fromRGB(255, 0, 0)})
+	local DesyncChamHighlight = DesyncOtherSection:Toggle({Name = "Highlight", Default = true})
+	local DesyncVisualizerFill = DesyncOtherSection:Colorpicker({Name = "Fill Color", Default = Color3.fromRGB(0, 255, 255), Alpha = 0.5})
+	local DesyncVisualizerOutline = DesyncOtherSection:Colorpicker({Name = "Outline Color", Default = Color3.fromRGB(0, 0, 0)})
 	local DesyncChamMaterial = DesyncOtherSection:List({Name = "Material", Options = {"ForceField", "Neon", "Plastic", "Glass"}, Default = "ForceField"})
+	local DesyncChamReflectance = DesyncOtherSection:Slider({Name = "Reflectance", Min = 0, Max = 1, Default = 0, Decimals = 2})
+	local DesyncMaterialTexture = DesyncOtherSection:List({Name = "Texture", Options = {"Web", "Swirl", "Checkers", "CandyCane", "Dots", "Scanning", "Bubbles", "Normal", "Shield", "Water", "None"}, Default = "None"})
+	local DestroyCheatersToggle = DesyncOtherSection:Toggle({Name = "Destroy Cheaters"})
+	local DestroyCheatersKeybind = DestroyCheatersToggle:Keybind({Name = "Destroy Cheaters", Default = Enum.KeyCode.None})
+	local DestroyCheatersInterval = DesyncOtherSection:Slider({Name = "Interval", Min = 1, Max = 200, Default = 0, Suffix = "ms"})
+	local DestroyCheatersType = DesyncOtherSection:List({Name = "Type", Options = {"Nan", "High Magnitude", "Line Rendering Zone", "Randomize"}, Default = "Randomize"})
+	local DestroyCheatersMinHealth = DesyncOtherSection:Slider({Name = "Minimum Health", Min = 0, Max = 100, Default = 0})
 	
 	-- Desync Implementation
 	local desyncEnabled = false
@@ -4800,6 +4775,7 @@ end
 do -- Misc Features
 	local CombatSection = Misc:Section({Name = "Combat"})
 	local MovementSection = Misc:Section({Name = "Movement", Side = "Right"})
+	local OtherSection = Misc:Section({Name = "Other"})
 	
 	-- Combat
 	local SpeedToggle = CombatSection:Toggle({Name = "Speed"})
@@ -4811,6 +4787,10 @@ do -- Misc Features
 	
 	local AutoArmorToggle = CombatSection:Toggle({Name = "Auto Armor"})
 	local NoSlowToggle = CombatSection:Toggle({Name = "No Slow"})
+	local AutoReloadToggle = CombatSection:Toggle({Name = "Auto Reload"})
+	local AntiVoidKillToggle = CombatSection:Toggle({Name = "Anti Void Kill"})
+	local InfiniteZoomToggle = CombatSection:Toggle({Name = "Infinite Zoom"})
+	local ShowChatToggle = CombatSection:Toggle({Name = "Show Chat"})
 	
 	-- Movement
 	local FlyToggle = MovementSection:Toggle({Name = "Fly"})
@@ -4818,6 +4798,31 @@ do -- Misc Features
 	local FlyAmount = MovementSection:Slider({Name = "Amount", Min = 0, Max = 100, Default = 20})
 	
 	local AutoJumpToggle = MovementSection:Toggle({Name = "Auto Jump"})
+	local NoJumpCooldownToggle = MovementSection:Toggle({Name = "No Jump Cooldown"})
+	
+	-- Other Section (Hit Detection, Aspect Ratio, etc.)
+	local HitDetectionToggle = OtherSection:Toggle({Name = "Hit Detection"})
+	local HitChamToggle = OtherSection:Toggle({Name = "Hit Chams"})
+	local HitChamsColor = OtherSection:Colorpicker({Name = "Hit Chams", Default = Color3.fromRGB(255, 255, 255)})
+	local HitChamHighlightToggle = OtherSection:Toggle({Name = "Highlight"})
+	local HitChamsFillColor = OtherSection:Colorpicker({Name = "Fill", Default = Color3.fromRGB(255, 255, 255)})
+	local HitChamsOutlineColor = OtherSection:Colorpicker({Name = "Outline", Default = Color3.fromRGB(255, 255, 255)})
+	local HitMaterial = OtherSection:List({Name = "Material", Options = {"ForceField", "Neon", "Plastic"}, Default = "ForceField"})
+	local HitReflectance = OtherSection:Slider({Name = "Reflectance", Min = 0, Max = 1, Default = 0, Decimals = 2})
+	local HitTexture = OtherSection:List({Name = "Texture", Options = {"Web", "Swirl", "Checkers", "CandyCane", "Dots", "Scanning", "Bubbles", "Normal", "Shield", "Water", "None"}, Default = "None"})
+	local HitEffect = OtherSection:List({Name = "Hit Effect", Options = {"None", "Detailed Slash", "Electric", "Electric 2", "Nova", "Slash", "Sparkle", "Splash"}, Default = "None"})
+	local HitEffectSettings = OtherSection:Colorpicker({Name = "Hit Effect Settings", Default = Color3.fromRGB(255, 255, 255)})
+	local Hit3DMarkerToggle = OtherSection:Toggle({Name = "3D Hit Marker"})
+	local Hit3DMarkerColor = OtherSection:Colorpicker({Name = "3D Hit Marker", Default = Color3.fromRGB(255, 255, 255)})
+	local HealthIndicatorToggle = OtherSection:Toggle({Name = "Health Marker"})
+	local HealthIndicatorColor = OtherSection:Colorpicker({Name = "Health Indicator Color", Default = Color3.fromRGB(255, 255, 255)})
+	local OnHitLifetime = OtherSection:Slider({Name = "Lifetime", Min = 0, Max = 10, Default = 2, Decimals = 2, Suffix = "s"})
+	local HitSoundToggle = OtherSection:Toggle({Name = "Hit Sound"})
+	local HitSoundVolume = OtherSection:Slider({Name = "Volume", Min = 0, Max = 10, Default = 1, Decimals = 2})
+	local HitSoundPitch = OtherSection:Slider({Name = "Pitch", Min = 0, Max = 10, Default = 1, Decimals = 2})
+	local AspectRatioToggle = OtherSection:Toggle({Name = "Aspect Ratio"})
+	local HorizontalAspectRatio = OtherSection:Slider({Name = "Horizontal", Min = 0, Max = 1, Default = 1, Decimals = 2})
+	local VerticalAspectRatio = OtherSection:Slider({Name = "Vertical", Min = 0, Max = 1, Default = 1, Decimals = 2})
 	
 	-- Speed Implementation
 	SpeedToggle.Callback = function(state) end
@@ -4929,20 +4934,179 @@ do -- Misc Features
 			end
 		end
 	end)
+	
+	-- No Jump Cooldown
+	NoJumpCooldownToggle.Callback = function(state)
+		local character = game.Players.LocalPlayer.Character
+		if character and character:FindFirstChild("Humanoid") then
+			character.Humanoid.UseJumpPower = not state
+		end
+	end
+	game.Players.LocalPlayer.CharacterAdded:Connect(function()
+		if NoJumpCooldownToggle.Toggled then
+			game.Players.LocalPlayer.Character.Humanoid.UseJumpPower = false
+		end
+	end)
+	
+	-- Auto Reload
+	AutoReloadToggle.Callback = function(state) end
+	local function checkAutoReload()
+		if AutoReloadToggle.Toggled then
+			local character = game.Players.LocalPlayer.Character
+			if character then
+				local tool = character:FindFirstChildWhichIsA("Tool")
+				if tool and tool:FindFirstChild("Ammo") and tool:FindFirstChild("GunScript") then
+					if tool.Ammo.Value == 0 then
+						tool:Activate()
+					end
+				end
+			end
+		end
+	end
+	game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+		character.ChildAdded:Connect(function(child)
+			if child:IsA("Tool") and child:FindFirstChild("Ammo") then
+				child.Ammo:GetPropertyChangedSignal("Value"):Connect(checkAutoReload)
+			end
+		end)
+	end)
+	
+	-- Anti Void Kill
+	AntiVoidKillToggle.Callback = function(state)
+		workspace.FallenPartsDestroyHeight = state and -50000 or -500
+	end
+	
+	-- Infinite Zoom
+	InfiniteZoomToggle.Callback = function(state)
+		game.Players.LocalPlayer.CameraMaxZoomDistance = state and 9e9 or 30
+	end
+	
+	-- Show Chat
+	ShowChatToggle.Callback = function(state)
+		local chatGui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("Chat")
+		if chatGui and chatGui:FindFirstChild("Frame") then
+			local chatChannel = chatGui.Frame:FindFirstChild("ChatChannelParentFrame")
+			if chatChannel then
+				chatChannel.Visible = state
+			end
+		end
+	end
+	
+	-- Aspect Ratio
+	AspectRatioToggle.Callback = function(state) end
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if AspectRatioToggle.Toggled then
+			local camera = workspace.CurrentCamera
+			camera:SetAttribute("AspectRatio", Library.Flags[HorizontalAspectRatio.Flag] / Library.Flags[VerticalAspectRatio.Flag])
+		end
+	end)
 end
 --
 Players:PlayerList({})
 --
 do -- Visuals
+	local ESPSection = Visuals:Section({Name = "Esp"})
+	local EffectsSection = Visuals:Section({Name = "Effects", Side = "Right"})
+	local WorldSection = Visuals:Section({Name = "World", Side = "Right"})
 	local NotificationsSection = Visuals:Section({Name = "Notifications"})
 	local BarColorSection = Visuals:Section({Name = "BarColor"})
 	local TargetSection = Visuals:Section({Name = "Target"})
-	local CrosshairSection = Visuals:Section({Name = "Crosshair", Side = "Right"})
-	local CharacterCloneSection = Visuals:Section({Name = "Character Clone", Side = "Right"})
+	local CrosshairSection = Visuals:Section({Name = "Crosshair"})
+	local CharacterCloneSection = Visuals:Section({Name = "Character Clone"})
+	
+	-- ESP Section
+	local ESPEnabledToggle = ESPSection:Toggle({Name = "Enabled"})
+	local ShowNamesToggle = ESPSection:Toggle({Name = "Names"})
+	local ShowNamesColor = ESPSection:Colorpicker({Name = "Names Color", Default = Color3.fromRGB(255, 255, 255)})
+	local ShowWeaponToggle = ESPSection:Toggle({Name = "Weapon"})
+	local ShowWeaponColor = ESPSection:Colorpicker({Name = "Weapon Color", Default = Color3.fromRGB(255, 255, 255)})
+	local BoundingBoxToggle = ESPSection:Toggle({Name = "Bounding Boxes"})
+	local BoundingBoxColor = ESPSection:Colorpicker({Name = "Fill Color", Default = Color3.fromRGB(255, 255, 255)})
+	local FilledBoxToggle = ESPSection:Toggle({Name = "Box Fill"})
+	local FilledBoxColor1 = ESPSection:Colorpicker({Name = "High Contrast", Default = Color3.fromRGB(0, 0, 0)})
+	local FilledBoxColor2 = ESPSection:Colorpicker({Name = "Low Contrast", Default = Color3.fromRGB(255, 255, 255)})
+	local FilledBoxAnimationToggle = ESPSection:Toggle({Name = "Animation"})
+	local FilledBoxSpeed = ESPSection:Slider({Name = "Animation Speed", Min = -180, Max = 180, Default = 0})
+	local FilledBoxRotation = ESPSection:Slider({Name = "Custom Rotation", Min = -180, Max = 180, Default = 0})
+	local BoundingBoxType = ESPSection:List({Name = "Type", Options = {"Corner", "Bounding"}, Default = "Bounding"})
+	local HealthBarToggle = ESPSection:Toggle({Name = "Healthbar"})
+	local HealthBarHigh = ESPSection:Colorpicker({Name = "Health High", Default = Color3.fromRGB(0, 255, 0)})
+	local HealthBarLow = ESPSection:Colorpicker({Name = "Health Low", Default = Color3.fromRGB(255, 0, 0)})
+	local HealthNumberToggle = ESPSection:Toggle({Name = "Health Number"})
+	local ArmorBarToggle = ESPSection:Toggle({Name = "Armor Bar"})
+	local ArmorBarColor = ESPSection:Colorpicker({Name = "Armor Color", Default = Color3.fromRGB(0, 0, 255)})
+	local ArmorBarNumberToggle = ESPSection:Toggle({Name = "Number"})
+	local ReloadBarToggle = ESPSection:Toggle({Name = "Reload Bar"})
+	local ReloadBarColor = ESPSection:Colorpicker({Name = "Reload Color", Default = Color3.fromRGB(0, 255, 255)})
+	local ReloadBarNumberToggle = ESPSection:Toggle({Name = "Number"})
+	local GunIconsToggle = ESPSection:Toggle({Name = "Icons"})
+	local GunIconsColor = ESPSection:Colorpicker({Name = "Gun Images Color", Default = Color3.fromRGB(255, 255, 255)})
+	local ESPChamsToggle = ESPSection:Toggle({Name = "Chams"})
+	local ESPChamsFill = ESPSection:Colorpicker({Name = "Chams Fill", Default = Color3.fromRGB(186, 171, 255), Alpha = 0.5})
+	local ESPChamsOutline = ESPSection:Colorpicker({Name = "Chams Outline", Default = Color3.fromRGB(0, 0, 0), Alpha = 1})
+	
+	-- Effects Section
+	local CharacterChamsToggle = EffectsSection:Toggle({Name = "Character Chams"})
+	local CharacterChamsColor = EffectsSection:Colorpicker({Name = "Character Chams", Default = Color3.fromRGB(255, 255, 255)})
+	local LocalPlayerTexture = EffectsSection:List({Name = "Texture", Options = {"Web", "Swirl", "Checkers", "CandyCane", "Dots", "Scanning", "Bubbles", "Normal", "Shield", "Water", "None"}, Default = "None"})
+	local CharacterHighlightToggle = EffectsSection:Toggle({Name = "Highlight"})
+	local CharacterFill = EffectsSection:Colorpicker({Name = "Character Fill", Default = Color3.fromRGB(186, 171, 255), Alpha = 0.5})
+	local CharacterOutline = EffectsSection:Colorpicker({Name = "Character Outline", Default = Color3.fromRGB(0, 0, 0), Alpha = 1})
+	local AccessoryChamsToggle = EffectsSection:Toggle({Name = "Accessory Chams"})
+	local AccessoryChamsColor = EffectsSection:Colorpicker({Name = "Accessory Chams", Default = Color3.fromRGB(255, 255, 255)})
+	local GunChamsToggle = EffectsSection:Toggle({Name = "Gun Chams"})
+	local GunColor = EffectsSection:Colorpicker({Name = "Gun Color", Default = Color3.fromRGB(255, 255, 255)})
+	local GunMaterial = EffectsSection:List({Name = "Material", Options = {"ForceField", "Neon", "Plastic"}, Default = "ForceField"})
+	local GunReflectance = EffectsSection:Slider({Name = "Reflectance", Min = 0, Max = 1, Default = 0, Decimals = 2})
+	local GunTexture = EffectsSection:List({Name = "Texture", Options = {"Web", "Swirl", "Checkers", "CandyCane", "Dots", "Scanning", "Bubbles", "Normal", "Shield", "Water", "None"}, Default = "None"})
+	local GunHighlightToggle = EffectsSection:Toggle({Name = "Only Highlight Gun"})
+	local LocalTrail = EffectsSection:List({Name = "Trail", Options = {"None", "Basic", "Bright", "Shadow", "Dash"}, Default = "None"})
+	
+	-- World Section
+	local AmbientToggle = WorldSection:Toggle({Name = "Ambience"})
+	local OutdoorAmbience = WorldSection:Colorpicker({Name = "Outdoor Ambience", Default = Color3.fromRGB(255, 255, 255)})
+	local IndoorAmbience = WorldSection:Colorpicker({Name = "Indoor Ambience", Default = Color3.fromRGB(255, 255, 255)})
+	local ForceTimeOfDayToggle = WorldSection:Toggle({Name = "Force Time Of Day"})
+	local TimeOfDay = WorldSection:Slider({Name = "Time Of Day", Min = 0, Max = 24, Default = 12, Suffix = "hr"})
+	local FogToggle = WorldSection:Toggle({Name = "Fog"})
+	local FogColor = WorldSection:Colorpicker({Name = "Fog Color", Default = Color3.fromRGB(255, 255, 255)})
+	local FogStart = WorldSection:Slider({Name = "Fog Start", Min = 0, Max = 5000, Default = 0, Decimals = 2, Suffix = "st"})
+	local FogEnd = WorldSection:Slider({Name = "Fog End", Min = 0, Max = 5000, Default = 1500, Decimals = 2, Suffix = "st"})
+	local ColorCorrectionToggle = WorldSection:Toggle({Name = "Color Correction"})
+	local TintToggle = WorldSection:Toggle({Name = "Tint"})
+	local CorrectionTint = WorldSection:Colorpicker({Name = "Correction Tint", Default = Color3.fromRGB(255, 255, 255)})
+	local CorrectionSaturation = WorldSection:Slider({Name = "Saturation", Min = -2, Max = 2, Default = 0, Decimals = 2})
+	local CorrectionContrast = WorldSection:Slider({Name = "Contrast", Min = -1, Max = 1, Default = 0, Decimals = 2})
+	local CorrectionBrightness = WorldSection:Slider({Name = "Brightness", Min = 0, Max = 1, Default = 0, Decimals = 2})
+	local AtmosphereToggle = WorldSection:Toggle({Name = "Atmosphere"})
+	local AtmosphereAmbience = WorldSection:Colorpicker({Name = "Atmospheric Ambience", Default = Color3.fromRGB(255, 255, 255)})
+	local AtmosphereDecay = WorldSection:Colorpicker({Name = "Atmospheric Decay", Default = Color3.fromRGB(255, 255, 255)})
+	local AtmosphereGlare = WorldSection:Slider({Name = "Atmosphere Glare", Min = 0, Max = 1, Default = 0, Decimals = 2})
+	local AtmosphereHaze = WorldSection:Slider({Name = "Atmosphere Haze", Min = 0, Max = 1, Default = 0, Decimals = 2})
+	local AtmosphereDensity = WorldSection:Slider({Name = "Atmosphere Density", Min = 0, Max = 1, Default = 0, Decimals = 2})
+	local BloomToggle = WorldSection:Toggle({Name = "Bloom"})
+	local BloomThreshold = WorldSection:Slider({Name = "Bloom Threshold", Min = 0, Max = 1, Default = 0.3, Decimals = 2})
+	local BloomSize = WorldSection:Slider({Name = "Bloom Size", Min = 0, Max = 1000, Default = 1000})
+	local BloomIntensity = WorldSection:Slider({Name = "Bloom Intensity", Min = 0, Max = 1000, Default = 1})
+	local BulletTracersToggle = WorldSection:Toggle({Name = "Bullet Tracers"})
+	local BeamSettings0 = WorldSection:Colorpicker({Name = "Beam Start Color", Default = Color3.fromRGB(255, 255, 255)})
+	local BeamSettings1 = WorldSection:Colorpicker({Name = "Beam End Color", Default = Color3.fromRGB(255, 255, 255)})
+	local BeamLifetime = WorldSection:Slider({Name = "Beam Lifetime", Min = 0, Max = 10, Default = 5, Decimals = 2, Suffix = "s"})
+	local BeamWidth = WorldSection:Slider({Name = "Beam Width", Min = 0, Max = 10, Default = 1, Decimals = 2, Suffix = "studs"})
+	local BeamBrightness = WorldSection:Slider({Name = "Beam Brightness", Min = 0, Max = 10, Default = 1, Decimals = 2})
+	local BeamEmission = WorldSection:Slider({Name = "Light Emission", Min = 0, Max = 10, Default = 1, Decimals = 2})
+	local BeamInfluence = WorldSection:Slider({Name = "Light Influence", Min = 0, Max = 10, Default = 1, Decimals = 2})
+	local BeamSpeed = WorldSection:Slider({Name = "Texture Speed", Min = 0, Max = 10, Default = 0.5, Decimals = 2})
+	local BeamLength = WorldSection:Slider({Name = "Texture Length", Min = 0, Max = 10, Default = 2, Decimals = 2})
+	local BeamCurve0 = WorldSection:Slider({Name = "Start Curve", Min = 0, Max = 10, Default = 0.5, Decimals = 2})
+	local BeamCurve1 = WorldSection:Slider({Name = "End Curve", Min = 0, Max = 10, Default = 0.5, Decimals = 2})
+	local BeamSegments = WorldSection:Slider({Name = "Segments", Min = 0, Max = 100, Default = 5})
+	local BeamFaceCamera = WorldSection:Toggle({Name = "Face Camera", Default = true})
+	local BeamTexture = WorldSection:List({Name = "Beam Texture", Options = {"Double Helix", "Electric", "Electric + Glow", "Fade", "Pulsate", "Red Lazer", "Smoke", "Warp", "1", "2", "3"}, Default = "Double Helix"})
 	
 	-- Notifications Section
 	local NotificationName = NotificationsSection:Textbox({Name = "Name", State = "[Ratz]"})
-	local NotificationColor = NotificationsSection:Colorpicker({Name = "Color", Default = Color3.fromRGB(147, 112, 219)})
+	local NotificationColor = NotificationsSection:Colorpicker({Name = "Color", Default = Color3.fromRGB(186, 171, 255)})
 	local RespawnSamePos = NotificationsSection:Toggle({Name = "Respawn Same Position"})
 	local SilentAim = NotificationsSection:Toggle({Name = "Silent Aim"})
 	local BulletTP = NotificationsSection:Toggle({Name = "Bullet TP"})
@@ -4952,17 +5116,17 @@ do -- Visuals
 	
 	-- BarColor Section
 	local BarColorEnable = BarColorSection:Toggle({Name = "Enable"})
-	local EnergyColor = BarColorSection:Colorpicker({Name = "Energy Color", Default = Color3.fromRGB(147, 112, 219)})
-	local HealthColor = BarColorSection:Colorpicker({Name = "Health Color", Default = Color3.fromRGB(147, 112, 219)})
-	local ArmorColor = BarColorSection:Colorpicker({Name = "Armor Color", Default = Color3.fromRGB(147, 112, 219)})
-	local FireColor = BarColorSection:Colorpicker({Name = "Fire Color", Default = Color3.fromRGB(147, 112, 219)})
+	local EnergyColor = BarColorSection:Colorpicker({Name = "Energy Color", Default = Color3.fromRGB(186, 171, 255)})
+	local HealthColor = BarColorSection:Colorpicker({Name = "Health Color", Default = Color3.fromRGB(186, 171, 255)})
+	local ArmorColor = BarColorSection:Colorpicker({Name = "Armor Color", Default = Color3.fromRGB(186, 171, 255)})
+	local FireColor = BarColorSection:Colorpicker({Name = "Fire Color", Default = Color3.fromRGB(186, 171, 255)})
 	
 	-- Target Section
 	local TargetHighlightSection = Visuals:Section({Name = "Target Highlight"})
 	local TargetLineSection = Visuals:Section({Name = "Target Line"})
 	
 	local HighlightEnable = TargetHighlightSection:Toggle({Name = "Enable"})
-	local HighlightFillColor = TargetHighlightSection:Colorpicker({Name = "Fill Color", Default = Color3.fromRGB(147, 112, 219)})
+	local HighlightFillColor = TargetHighlightSection:Colorpicker({Name = "Fill Color", Default = Color3.fromRGB(186, 171, 255)})
 	local HighlightOutlineColor = TargetHighlightSection:Colorpicker({Name = "Outline Color", Default = Color3.fromRGB(255, 255, 255)})
 	
 	local LineEnable = TargetLineSection:Toggle({Name = "Enable"})
@@ -5188,7 +5352,7 @@ do -- Visuals
 		local highlight = Instance.new("Highlight")
 		highlight.Name = "ESPHighlight"
 		highlight.Enabled = Library.Flags[HighlightEnable.Flag]
-		highlight.FillColor = Library.Flags[HighlightFillColor.Flag] or Color3.fromRGB(147, 112, 219)
+		highlight.FillColor = Library.Flags[HighlightFillColor.Flag] or Color3.fromRGB(186, 171, 255)
 		highlight.OutlineColor = Library.Flags[HighlightOutlineColor.Flag] or Color3.fromRGB(255, 255, 255)
 		highlight.FillTransparency = 0.5
 		highlight.OutlineTransparency = 0
@@ -5609,14 +5773,1788 @@ do -- Visuals
 end
 --
 do -- Settings
-	local CFG = Settings:Section({Name = "Config", Zindex = 2})
-	--
-	local ConfigList = CFG:List({Name = "Config", Flag = "SettingConfigurationList", Options = {}})
-	CFG:Textbox({Flag = "SettingsConfigurationName", Name = "Config Name"})
-	--
-	CFG:Keybind({Name = "Menu Key", Flag = "MenuKey", UseKey = true, Default = Enum.KeyCode.End, Callback = function(State) Library.UIKey = State end})
-	CFG:Colorpicker({Name = "Menu Accent", Flag = "MenuAccent", Default = Library.Accent, Callback = function(State) Library:ChangeAccent(State) end})
-	CFG:Toggle({Name = "Show Watermark", Flag = "Watermark", Callback = function(State) Watermark:SetVisible(State) end})
-	CFG:Textbox({Flag = "WatermarkText", Name = "Watermark Text", State = "watermark | bit.tech | private", Callback = function(State) Watermark:UpdateText(State) end})
+	local ConfigSection = Settings:Section({Name = "Config"})
+	local ThemeSection = Settings:Section({Name = "Theme", Side = "Right"})
+	
+	-- Config Section
+	local ConfigList = ConfigSection:List({Name = "Config", Flag = "config_name_list", Options = {}})
+	local ConfigNameTextbox = ConfigSection:Textbox({Flag = "config_name_text_box", Name = "Config Name"})
+	local CreateConfigButton = ConfigSection:Button({Name = "Create", Callback = function()
+		local configName = Library.Flags[ConfigNameTextbox.Flag] or "default"
+		local configData = Library:GetConfig()
+		if not isfolder(Library.Directory .. "/configs") then
+			makefolder(Library.Directory .. "/configs")
+		end
+		writefile(Library.Directory .. "/configs/" .. configName .. ".cfg", configData)
+		Library:UpdateConfigList()
+	end})
+	local DeleteConfigButton = ConfigSection:Button({Name = "Delete", Callback = function()
+		local selectedConfig = Library.Flags[ConfigList.Flag]
+		if selectedConfig then
+			delfile(Library.Directory .. "/configs/" .. selectedConfig .. ".cfg")
+			Library:UpdateConfigList()
+		end
+	end})
+	local LoadConfigButton = ConfigSection:Button({Name = "Load", Callback = function()
+		local selectedConfig = Library.Flags[ConfigList.Flag]
+		if selectedConfig and isfile(Library.Directory .. "/configs/" .. selectedConfig .. ".cfg") then
+			local configData = readfile(Library.Directory .. "/configs/" .. selectedConfig .. ".cfg")
+			Library:LoadConfig(configData)
+		end
+	end})
+	local SaveConfigButton = ConfigSection:Button({Name = "Save", Callback = function()
+		local configName = Library.Flags[ConfigNameTextbox.Flag] or Library.Flags[ConfigList.Flag] or "default"
+		local configData = Library:GetConfig()
+		if not isfolder(Library.Directory .. "/configs") then
+			makefolder(Library.Directory .. "/configs")
+		end
+		writefile(Library.Directory .. "/configs/" .. configName .. ".cfg", configData)
+		Library:UpdateConfigList()
+	end})
+	local oldConfig = Library:GetConfig()
+	local UnloadConfigButton = ConfigSection:Button({Name = "Unload Config", Callback = function()
+		Library:LoadConfig(oldConfig)
+	end})
+	local UnloadMenuButton = ConfigSection:Button({Name = "Unload Menu", Callback = function()
+		if Library.Holder then
+			Library.Holder:Destroy()
+		end
+		for _, connection in pairs(Library.Connections) do
+			if connection and connection.Disconnect then
+				connection:Disconnect()
+			end
+		end
+	end})
+	
+	-- Theme Section
+	ThemeSection:Label({Name = "Accent"})
+	local AccentColorpicker = ThemeSection:Colorpicker({Name = "Accent", Flag = "accent", Default = Library.Accent, Callback = function(color)
+		Library.Accent = color
+		Library:ChangeAccent(color)
+	end})
+	ThemeSection:Label({Name = "Contrast"})
+	local LowContrastColorpicker = ThemeSection:Colorpicker({Name = "Low", Flag = "low_contrast", Default = Color3.fromRGB(35, 35, 47), Callback = function(color)
+		if Library.Flags["high_contrast"] and Library.Flags["low_contrast"] then
+			Library:UpdateTheme("contrast", ColorSequence.new({
+				ColorSequenceKeypoint.new(0, color),
+				ColorSequenceKeypoint.new(1, Library.Flags["high_contrast"])
+			}))
+		end
+	end})
+	local HighContrastColorpicker = ThemeSection:Colorpicker({Name = "High", Flag = "high_contrast", Default = Color3.fromRGB(41, 41, 55), Callback = function(color)
+		if Library.Flags["high_contrast"] and Library.Flags["low_contrast"] then
+			Library:UpdateTheme("contrast", ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Library.Flags["low_contrast"]),
+				ColorSequenceKeypoint.new(1, color)
+			}))
+		end
+	end})
+	ThemeSection:Label({Name = "Inline"})
+	local InlineColorpicker = ThemeSection:Colorpicker({Name = "Inline", Default = Color3.fromRGB(60, 55, 75), Callback = function(color)
+		Library:UpdateTheme("inline", color)
+	end})
+	ThemeSection:Label({Name = "Outline"})
+	local OutlineColorpicker = ThemeSection:Colorpicker({Name = "Outline", Default = Color3.fromRGB(32, 32, 38), Callback = function(color)
+		Library:UpdateTheme("outline", color)
+	end})
+	ThemeSection:Label({Name = "Text Color"})
+	local MainTextColorpicker = ThemeSection:Colorpicker({Name = "Main", Default = Color3.fromRGB(255, 255, 255), Callback = function(color)
+		Library:UpdateTheme("text", color)
+	end})
+	local OutlineTextColorpicker = ThemeSection:Colorpicker({Name = "Outline", Default = Color3.fromRGB(0, 0, 0), Callback = function(color)
+		Library:UpdateTheme("text_outline", color)
+	end})
+	ThemeSection:Label({Name = "Glow"})
+	local GlowColorpicker = ThemeSection:Colorpicker({Name = "Glow", Default = Library.Accent, Callback = function(color)
+		Library:UpdateTheme("glow", color)
+	end})
+	local UIBindKeybind = ThemeSection:Keybind({Name = "UI Bind", Default = Library.UIKey, Callback = function(state)
+		if Library.Holder then
+			Library.Holder.Visible = state
+		end
+	end})
+	local KeybindListToggle = ThemeSection:Toggle({Name = "Keybind List", Callback = function(state)
+		if Library.KeybindListFrame then
+			Library.KeybindListFrame.Visible = state
+		end
+	end})
+	
+	-- Config List Update Function
+	function Library:UpdateConfigList()
+		local configs = {}
+		if isfolder(Library.Directory .. "/configs") then
+			for _, file in ipairs(listfiles(Library.Directory .. "/configs")) do
+				local name = file:match("([^/]+)%.cfg$")
+				if name then
+					table.insert(configs, name)
+				end
+			end
+		end
+		ConfigList:Refresh({Options = configs})
+	end
+	
+	-- Initialize config list
+	task.spawn(function()
+		task.wait(0.1)
+		Library:UpdateConfigList()
+	end)
+end
 
+-- Implementation Code (Functions to make features work)
+do
+	-- Variables
+	local uis = game:GetService("UserInputService")
+	local players = game:GetService("Players")
+	local ws = game:GetService("Workspace")
+	local rs = game:GetService("ReplicatedStorage")
+	local http_service = game:GetService("HttpService")
+	local lighting = game:GetService("Lighting")
+	local run = game:GetService("RunService")
+	local stats = game:GetService("Stats")
+	local debris = game:GetService("Debris")
+	local coregui = game:GetService("CoreGui")
+	
+	local lp = players.LocalPlayer
+	local camera = ws.CurrentCamera
+	local mouse = lp:GetMouse()
+	local gui_offset = game:GetService("GuiService"):GetGuiInset().Y
+	
+	local vec2 = Vector2.new
+	local vec3 = Vector3.new
+	local cfr = CFrame.new
+	local rgb = Color3.fromRGB
+	local hex = Color3.fromHex
+	local angle = CFrame.Angles
+	local rad = math.rad
+	local floor = math.floor
+	local max = math.max
+	local min = math.min
+	local abs = math.abs
+	
+	local LPH_NO_VIRTUALIZE = (LPH_OBFUSCATED and function(func) return func end) or function(func) return func end
+	
+	-- Utility Functions
+	local utility = {
+		seperators = {
+			Head = {"Head"},
+			Torso = {"UpperTorso", "LowerTorso"},
+			Legs = {"LeftUpperLeg", "LeftLowerLeg", "RightUpperLeg", "RightLowerLeg"},
+			Feet = {"RightFoot", "LeftFoot"},
+			Arms = {"LeftUpperArm", "LeftLowerArm", "LeftHand", "RightUpperArm", "RightLowerArm", "RightHand"},
+			Hrp = {"HumanoidRootPart"}
+		},
+		textures = {
+			["Web"] = "rbxassetid://301464986",
+			["Swirl"] = "rbxassetid://8133639623",
+			["Checkers"] = "rbxassetid://5790215150",
+			["CandyCane"] = "rbxassetid://6853532738",
+			["Dots"] = "rbxassetid://5830615971",
+			["Scanning"] = "rbxassetid://5843010904",
+			["Bubbles"] = "rbxassetid://1461576423",
+			["Normal"] = "rbxassetid://4494641460",
+			["Shield"] = "rbxassetid://361073795",
+			["Water"] = "rbxasset://textures/water/normal_21.dds",
+			["None"] = ""
+		}
+	}
+	
+	utility.validate_client = LPH_NO_VIRTUALIZE(function(player)
+		local object = player.Character
+		local humanoid = object and object:FindFirstChild("Humanoid")
+		local rootpart = humanoid and humanoid.RootPart
+		return object, humanoid, rootpart
+	end)
+	
+	utility.to_screen_point = LPH_NO_VIRTUALIZE(function(position)
+		return camera:WorldToViewportPoint(position)
+	end)
+	
+	utility.simplify_parts = LPH_NO_VIRTUALIZE(function(parts_table)
+		local parts = {}
+		if type(parts_table) == "table" then
+			for _, name in next, parts_table do
+				local separator = utility.seperators[name]
+				if separator then
+					for _, part in next, separator do
+						table.insert(parts, part)
+					end
+				end
+			end
+		else
+			local separator = utility.seperators[parts_table]
+			if separator then
+				for _, part in next, separator do
+					table.insert(parts, part)
+				end
+			end
+		end
+		return parts
+	end)
+	
+	utility.get_closest_part = LPH_NO_VIRTUALIZE(function(player, list)
+		if not player or not player.Character then return nil end
+		local distance = math.huge
+		local closest_part
+		
+		for _, body_part in next, player.Character:GetChildren() do
+			if body_part:IsA("BasePart") and table.find(list, body_part.Name) then
+				local screen_pos = utility.to_screen_point(body_part.Position)
+				local magnitude = (vec2(screen_pos.X, screen_pos.Y) - vec2(mouse.X, mouse.Y + gui_offset)).magnitude
+				
+				if magnitude < distance then
+					closest_part = body_part
+					distance = magnitude
+				end
+			end
+		end
+		
+		return closest_part
+	end)
+	
+	utility.recalculate_velocity = LPH_NO_VIRTUALIZE(function(before, after, time)
+		return (after - before) / time
+	end)
+	
+	utility.get_tool_handle = LPH_NO_VIRTUALIZE(function()
+		local tool = lp.Character and lp.Character:FindFirstChildWhichIsA("Tool")
+		if tool and tool:FindFirstChild("Handle") then
+			return tool.Handle
+		end
+		return nil
+	end)
+	
+	utility.is_knocked = LPH_NO_VIRTUALIZE(function(player)
+		if not player or not player.Character then return false end
+		local bodyEffects = player.Character:FindFirstChild("BodyEffects")
+		if bodyEffects and bodyEffects:FindFirstChild("K.O") then
+			return bodyEffects["K.O"].Value
+		end
+		return false
+	end)
+	
+	utility.is_godded = LPH_NO_VIRTUALIZE(function(player)
+		if not player or not player.Character then return false end
+		return player.Character:FindFirstChild("ForceField") ~= nil
+	end)
+	
+	utility.is_visible = LPH_NO_VIRTUALIZE(function(position)
+		if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return false end
+		local origin = utility.get_tool_handle() or lp.Character.HumanoidRootPart
+		local raycast_params = RaycastParams.new()
+		raycast_params.FilterDescendantsInstances = {ws:FindFirstChild("Ignored"), ws:FindFirstChild("Players"), camera, lp.Character}
+		raycast_params.FilterType = Enum.RaycastFilterType.Blacklist
+		
+		local direction = position - origin.Position
+		local distance = direction.Magnitude
+		direction = direction.Unit * distance
+		
+		local result = ws:Raycast(origin.Position, direction, raycast_params)
+		return not result
+	end)
+	
+	-- Target Selection Implementation
+	local target_selection = {
+		player = nil,
+		time = tick(),
+		pass = true
+	}
+	local target = target_selection.player
+	
+	target_selection.update_target = LPH_NO_VIRTUALIZE(function(distance)
+		local _distance = distance == 100 and math.huge or distance
+		target = nil
+		
+		for _, player in next, players:GetPlayers() do
+			if player ~= lp then
+				local object, humanoid, rootpart = utility.validate_client(player)
+				
+				if object and humanoid and rootpart then
+					local screen_position, on_screen = utility.to_screen_point(rootpart.Position)
+					local magnitude = (vec2(screen_position.X, screen_position.Y) - vec2(mouse.X, mouse.Y + gui_offset)).magnitude
+					
+					if magnitude < _distance and on_screen then
+						_distance = magnitude
+						target = player
+					end
+				end
+			end
+		end
+		target_selection.player = target
+	end)
+	
+	target_selection.update_checks = function()
+		if not target or not target.Character then
+			target_selection.pass = true
+			return
+		end
+		
+		local checks = Library.Flags["target_selected_checks"] or {}
+		if type(checks) ~= "table" then checks = {} end
+		if #checks == 0 then
+			target_selection.pass = true
+		else
+			local spawned_in = table.find(checks, "ForceField") and utility.is_godded(target) or false
+			local knocked = table.find(checks, "Knocked") and utility.is_knocked(target) or false
+			
+			if knocked or spawned_in then
+				target_selection.pass = false
+			else
+				target_selection.pass = true
+			end
+		end
+	end
+	
+	-- Snapline and Bounding Box for Target
+	local snapline = Drawing.new("Line")
+	snapline.Visible = false
+	snapline.Thickness = 1
+	snapline.Color = Color3.fromRGB(186, 171, 255)
+	
+	local bounding_box = Instance.new("SelectionBox")
+	bounding_box.Adornee = nil
+	bounding_box.Parent = coregui
+	bounding_box.Transparency = 0.8
+	bounding_box.Color3 = Color3.fromRGB(0, 0, 0)
+	
+	local bounding_box_fill = Instance.new("Part")
+	bounding_box_fill.Name = "TargetBoundingBox"
+	bounding_box_fill.Anchored = true
+	bounding_box_fill.CanCollide = false
+	bounding_box_fill.Transparency = 0.7
+	bounding_box_fill.Material = Enum.Material.ForceField
+	bounding_box_fill.Color = Color3.fromRGB(186, 171, 255)
+	bounding_box_fill.Size = Vector3.new(4, 6, 2)
+	bounding_box_fill.CFrame = cfr(9e9, 9e9, 9e9)
+	bounding_box_fill.Parent = ws
+	
+	-- Target Selection Callbacks (set after UI elements are created)
+	-- These will be set in the implementation section below
+	
+	-- Aim Assist Implementation
+	local aim_assist = {
+		hitpart = nil,
+		airpart = nil,
+		destination = nil,
+		velocity = Vector3.new(0, 0, 0),
+		prediction = 0.1413,
+		previous_position = nil,
+		offset = 0,
+		state = nil
+	}
+	
+	aim_assist.calculate_prediction = function()
+		local autoPred = Library.Flags["aim_assist_auto_prediction"]
+		if autoPred then
+			local pingvalue = stats.Network and stats.Network.ServerStatsItem and stats.Network.ServerStatsItem["Data Ping"]
+			if pingvalue then
+				local pingstr = pingvalue:GetValueString()
+				local split = string.split(pingstr, "(")
+				local ping = tonumber(split[1]) or 50
+				local pingFactor = Library.Flags["aim_assist_ping_factor"] or 1500
+				aim_assist.prediction = ping / pingFactor
+			else
+				aim_assist.prediction = 0.1413
+			end
+		else
+			local manualPred = Library.Flags["aim_assist_prediction"] or "0.1413"
+			aim_assist.prediction = tonumber(manualPred) or 0.1413
+		end
+	end
+	
+	aim_assist.calculate_velocity = LPH_NO_VIRTUALIZE(function(delta)
+		if not target or not target.Character or not target.Character:FindFirstChild("HumanoidRootPart") then return end
+		
+		local velocityType = Library.Flags["aim_assist_velocity_type"] or "Velocity"
+		if velocityType == "Velocity" then
+			if aim_assist.hitpart then
+				aim_assist.velocity = aim_assist.hitpart.AssemblyLinearVelocity
+			elseif aim_assist.airpart then
+				aim_assist.velocity = aim_assist.airpart.AssemblyLinearVelocity
+			end
+		else -- Recalculation
+			local hrp = target.Character.HumanoidRootPart
+			if aim_assist.previous_position == nil then
+				aim_assist.previous_position = hrp.Position
+			end
+			
+			if aim_assist.previous_position then
+				aim_assist.velocity = utility.recalculate_velocity(aim_assist.previous_position, hrp.Position, delta)
+				aim_assist.previous_position = hrp.Position
+			end
+		end
+	end)
+	
+	aim_assist.calculate_destination = LPH_NO_VIRTUALIZE(function()
+		if not target or not target.Character or not target.Character:FindFirstChild("Humanoid") then return end
+		
+		local humanoid = target.Character.Humanoid
+		aim_assist.state = humanoid:GetState()
+		
+		if aim_assist.state == Enum.HumanoidStateType.Freefall then
+			aim_assist.offset = Library.Flags["adjust_for_jumping"] and 1 or 0
+			local airParts = Library.Flags["aim_assist_air_bone"] or {"RightFoot"}
+			if type(airParts) ~= "table" then airParts = {airParts} end
+			local selected_parts = utility.simplify_parts(airParts)
+			aim_assist.airpart = utility.get_closest_part(target, selected_parts)
+			
+			if aim_assist.airpart then
+				aim_assist.destination = aim_assist.airpart.Position + vec3(0, aim_assist.offset, 0)
+			end
+		else
+			aim_assist.offset = 0
+			local hitParts = Library.Flags["aim_assist_bone"] or {"Torso"}
+			if type(hitParts) ~= "table" then hitParts = {hitParts} end
+			local selected_parts = utility.simplify_parts(hitParts)
+			aim_assist.hitpart = utility.get_closest_part(target, selected_parts)
+			
+			if aim_assist.hitpart then
+				aim_assist.destination = aim_assist.hitpart.Position + vec3(0, aim_assist.offset, 0)
+			end
+		end
+	end)
+	
+	aim_assist.lerp_camera = LPH_NO_VIRTUALIZE(function(position, smoothing)
+		if position then
+			camera.CFrame = camera.CFrame:Lerp(cfr(camera.CFrame.Position, position), (100 - smoothing) / 100)
+		end
+	end)
+	
+	-- Silent Aim Implementation
+	local silent_aim = {
+		hitpart = nil,
+		airpart = nil,
+		destination = nil,
+		velocity = Vector3.new(0, 0, 0),
+		prediction = 0.1413,
+		previous_position = nil,
+		offset = 0,
+		state = nil
+	}
+	
+	silent_aim.calculate_prediction = function()
+		local autoPred = Library.Flags[SilentAimAutoPrediction.Flag]
+		if autoPred then
+			local ping = stats.PerformanceStats and stats.PerformanceStats.Ping and stats.PerformanceStats.Ping:GetValue()
+			if ping then
+				local pingFactor = Library.Flags[SilentAimPingFactor.Flag] or 500
+				silent_aim.prediction = ping / pingFactor
+			else
+				silent_aim.prediction = 0.1413
+			end
+		else
+			local manualPred = Library.Flags[SilentAimManualPrediction.Flag] or "0.1413"
+			silent_aim.prediction = tonumber(manualPred) or 0.1413
+		end
+	end
+	
+	silent_aim.calculate_velocity = LPH_NO_VIRTUALIZE(function(delta)
+		if not target or not target.Character or not target.Character:FindFirstChild("HumanoidRootPart") then return end
+		
+		local velocityType = Library.Flags[SilentAimVelocityType.Flag] or "Velocity"
+		if velocityType == "Velocity" then
+			if silent_aim.hitpart then
+				silent_aim.velocity = silent_aim.hitpart.AssemblyLinearVelocity
+			elseif silent_aim.airpart then
+				silent_aim.velocity = silent_aim.airpart.AssemblyLinearVelocity
+			end
+		else -- Recalculation
+			local hrp = target.Character.HumanoidRootPart
+			if silent_aim.previous_position == nil then
+				silent_aim.previous_position = hrp.Position
+			end
+			
+			if silent_aim.previous_position then
+				silent_aim.velocity = utility.recalculate_velocity(silent_aim.previous_position, hrp.Position, delta)
+				silent_aim.previous_position = hrp.Position
+			end
+		end
+	end)
+	
+	silent_aim.calculate_part = LPH_NO_VIRTUALIZE(function()
+		if not target or not target.Character or not target.Character:FindFirstChild("Humanoid") then return end
+		
+		local humanoid = target.Character.Humanoid
+		silent_aim.state = humanoid:GetState()
+		
+		if silent_aim.state == Enum.HumanoidStateType.Freefall then
+			local selected_parts = utility.simplify_parts(Library.Flags[SilentAimAirBone.Flag] or {"Feet"})
+			silent_aim.airpart = utility.get_closest_part(target, selected_parts)
+		else
+			local selected_parts = utility.simplify_parts(Library.Flags[SilentAimBone.Flag] or {"Hrp"})
+			silent_aim.hitpart = utility.get_closest_part(target, selected_parts)
+		end
+	end)
+	
+	silent_aim.calculate_destination = LPH_NO_VIRTUALIZE(function()
+		if silent_aim.state == Enum.HumanoidStateType.Freefall then
+			silent_aim.offset = 0
+			if silent_aim.airpart then
+				silent_aim.destination = silent_aim.airpart.Position + vec3(0, silent_aim.offset, 0)
+			end
+		else
+			silent_aim.offset = 0
+			if silent_aim.hitpart then
+				silent_aim.destination = silent_aim.hitpart.Position + vec3(0, silent_aim.offset, 0)
+			end
+		end
+	end)
+	
+	silent_aim.update_box_fill = LPH_NO_VIRTUALIZE(function(character)
+		if not character then return end
+		local orientation, boundary = character:GetBoundingBox()
+		bounding_box_fill.Size = boundary
+		bounding_box_fill.CFrame = orientation
+	end)
+	
+	-- Target Selection Think Loop
+	target_selection.think = LPH_NO_VIRTUALIZE(function()
+		if target == nil then
+			snapline.Visible = false
+			bounding_box.Adornee = nil
+			bounding_box_fill.CFrame = cfr(9e9, 9e9, 9e9)
+			
+			if lp.Character and lp.Character:FindFirstChild("Humanoid") then
+				if lp.Character.Humanoid.AutoRotate == false then
+					lp.Character.Humanoid.AutoRotate = true
+				end
+				
+				if camera.CameraSubject ~= lp.Character.Humanoid then
+					camera.CameraSubject = lp.Character.Humanoid
+				end
+			end
+			return
+		end
+		
+		local character, humanoid, rootpart = utility.validate_client(target)
+		
+		local targetSelected = Library.Flags["target_selected"]
+		local keybindActive = Library.Flags["target_selected_bind_KEY STATE"] == "Always" or 
+			(Library.Flags["target_selected_bind_KEY STATE"] == "Hold" and Library.Flags["target_selected_bind_KEY"])
+		
+		if targetSelected and keybindActive then
+			local refreshTime = Library.Flags["target_selector_refresh_time"] or 40
+			if (tick() - target_selection.time) >= (refreshTime / 1000) then
+				target_selection.time = tick()
+				
+				if Library.Flags["auto_select"] then
+					local fov = Library.Flags["target_selector_fov"] or 100
+					local distance = fov == 100 and math.huge or fov
+					target_selection.update_target(distance)
+				end
+				
+				if target and target.Character then
+					target_selection.update_checks()
+				end
+			end
+		end
+		
+		if target and target.Character and target_selection.pass then
+			-- Aim Assist
+			if Library.Flags["aim_assist"] then
+				aim_assist.calculate_destination()
+				aim_assist.calculate_prediction()
+				aim_assist.calculate_velocity(run.Heartbeat:Wait())
+				
+				if aim_assist.destination then
+					local smoothing = Library.Flags["smoothing_factor"] or 0.01
+					if aim_assist.velocity and aim_assist.prediction then
+						local predictedPos = aim_assist.destination + (aim_assist.velocity * aim_assist.prediction)
+						aim_assist.lerp_camera(predictedPos, smoothing * 100)
+					end
+				end
+			end
+			
+			-- Silent Aim
+			if Library.Flags["silent_aim"] then
+				silent_aim.calculate_part()
+				silent_aim.calculate_prediction()
+			end
+			
+			-- Look At
+			if Library.Flags["look_at"] then
+				if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") and target.Character:FindFirstChild("HumanoidRootPart") then
+					local local_root = lp.Character.HumanoidRootPart
+					local root = target.Character.HumanoidRootPart
+					if lp.Character:FindFirstChild("Humanoid") then
+						lp.Character.Humanoid.AutoRotate = false
+					end
+					local_root.CFrame = cfr(local_root.Position, vec3(root.Position.X, local_root.Position.Y, root.Position.Z))
+				end
+			end
+			
+			-- Spectate
+			if Library.Flags["spectate"] and target.Character:FindFirstChild("Humanoid") then
+				camera.CameraSubject = target.Character.Humanoid
+			end
+			
+			-- Bounding Box
+			if Library.Flags["target_bounding_box"] then
+				bounding_box.Adornee = target.Character
+				
+				if Library.Flags["target_bounding_box_fill"] then
+					silent_aim.update_box_fill(character)
+				else
+					bounding_box_fill.CFrame = cfr(9e9, 9e9, 9e9)
+				end
+			end
+			
+			-- Snapline
+			if Library.Flags["snap_line"] then
+				local on_screen_position, on_screen = utility.to_screen_point(target.Character.HumanoidRootPart.Position)
+				if on_screen then
+					snapline.Visible = true
+					snapline.From = vec2(mouse.X, mouse.Y + gui_offset)
+					snapline.To = vec2(on_screen_position.X, on_screen_position.Y)
+				else
+					snapline.Visible = false
+				end
+			else
+				snapline.Visible = false
+			end
+		end
+	end)
+	
+	-- Silent Aim Hook
+	if hookmetamethod then
+		local oldNamecall
+		oldNamecall = hookmetamethod(game, "__namecall", newcclosure(LPH_NO_VIRTUALIZE(function(self, ...)
+			local method = getnamecallmethod()
+			
+			if self.Name == "MainEvent" and Library.Flags["silent_aim"] and method == "FireServer" then
+				local args = {...}
+				
+				if args[1] == "UpdateMousePosI2" and target and target.Character then
+					silent_aim.calculate_part()
+					silent_aim.calculate_prediction()
+					silent_aim.calculate_velocity(run.Heartbeat:Wait())
+					silent_aim.calculate_destination()
+					
+					if silent_aim.destination and silent_aim.velocity and silent_aim.prediction then
+						args[2] = silent_aim.destination + (silent_aim.velocity * silent_aim.prediction)
+					end
+				end
+				
+				return oldNamecall(self, unpack(args))
+			end
+			
+			return oldNamecall(self, ...)
+		end)))
+	end
+	
+	-- Run Target Selection Think Loop
+	run.Heartbeat:Connect(function(delta)
+		target_selection.think()
+	end)
+	
+	-- Desync Implementation
+	local desync = {
+		main_enabled = false,
+		dc_enabled = false,
+		clone = nil,
+		cham = nil,
+		final_position = CFrame.new(0, 0, 0),
+		old_position = CFrame.new(0, 0, 0),
+		frame_counter = 0,
+		radians = 0
+	}
+	
+	-- Clone character for desync
+	local function clone_character(player, parent)
+		if not player.Character then return nil, nil end
+		player.Character.Archivable = true
+		local model = player.Character:Clone()
+		model.Parent = parent
+		
+		for _, part in next, model:GetDescendants() do
+			if part.Name == "CUFF" or part.Name == "HumanoidRootPart" then
+				part:Destroy()
+			elseif (part:IsA("BasePart") or part:IsA("MeshPart") or part:IsA("Part")) and part.Name ~= "HumanoidRootPart" then
+				part.Color = Color3.fromRGB(255, 0, 0)
+				part.Transparency = 0.7
+				part.CanCollide = false
+				part.Anchored = true
+				part.Material = Enum.Material.ForceField
+			else
+				part:Destroy()
+			end
+		end
+		
+		local highlight = Instance.new("Highlight")
+		highlight.Enabled = true
+		highlight.Parent = coregui
+		highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+		highlight.FillColor = Color3.fromRGB(0, 255, 255)
+		highlight.OutlineColor = Color3.fromRGB(0, 0, 0)
+		highlight.OutlineTransparency = 0.5
+		highlight.FillTransparency = 0.5
+		highlight.Adornee = model
+		
+		model.Name = "DesyncClone"
+		return model, highlight
+	end
+	
+	-- Callbacks for Desync are set in the Rage Features section above
+	
+	desync.calculate_position = function(origin, positionPreset, rotationPreset)
+		local customXEnabled = Library.Flags["custom_x_enabled"]
+		local customYEnabled = Library.Flags["custom_y_enabled"]
+		local customZEnabled = Library.Flags["custom_z_enabled"]
+		local x = customXEnabled and (Library.Flags["custom_x"] or 0) or 0
+		local y = customYEnabled and (Library.Flags["custom_y"] or 0) or 0
+		local z = customZEnabled and (Library.Flags["custom_z"] or 0) or 0
+		
+		local rotations = {
+			["None"] = angle(0, 0, 0),
+			["Back"] = angle(0, rad(180), 0),
+			["Lay"] = angle(rad(90), 0, 0),
+			["Shinji"] = angle(rad(180), rad(180), 0),
+			["Jitter"] = angle(0, rad(math.random(30, 90)), 0),
+			["Spin"] = angle(0, rad(desync.radians), 0),
+			["Random"] = angle(rad(math.random(-180, 180)), rad(math.random(-180, 180)), rad(math.random(-180, 180)))
+		}
+		
+		local positions = {
+			["Target Strafe"] = origin * angle(0, rad(desync.radians), 0) * cfr(x, y, z),
+			["None"] = origin * cfr(x, y, z)
+		}
+		
+		local rotation = rotations[rotationPreset] or rotations["None"]
+		local position = positions[positionPreset] or positions["None"]
+		
+		desync.final_position = position * rotation
+	end
+	
+	desync.calculate_dc = function(origin)
+		desync.frame_counter = desync.frame_counter + 1
+		local dcType = Library.Flags["destroy_cheaters_type"] or "Randomize"
+		local interval = Library.Flags["destroy_cheaters_interval"] or 0
+		local minHealth = Library.Flags["destroy_cheaters_min_health"] or 0
+		
+		local destroy_cheaters = {
+			["Nan"] = origin * cfr(0/0, 0/0, 1),
+			["High Magnitude"] = origin * cfr(9e9, 9e9, 9e9),
+			["Line Rendering Zone"] = origin * cfr(9e4, 9e4, 9e4),
+			["Randomize"] = origin * cfr(math.random(1,2) == 2 and 9^math.random(4,9) or 1/0, -1000, 9^math.random(4,9))
+		}
+		
+		if not desync.main_enabled then
+			desync.final_position = origin
+		end
+		
+		if interval > 0 and desync.frame_counter % interval == 0 then
+			if lp.Character and lp.Character:FindFirstChild("Humanoid") and lp.Character.Humanoid.Health <= minHealth then
+				desync.final_position = destroy_cheaters[dcType] or origin
+			end
+		end
+	end
+	
+	desync.init = LPH_NO_VIRTUALIZE(function(position, visualize)
+		if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+		
+		desync.old_position = lp.Character.HumanoidRootPart.CFrame
+		lp.Character.HumanoidRootPart.CFrame = position
+		
+		run.RenderStepped:Wait()
+		
+		if visualize and desync.clone then
+			for _, part in pairs(lp.Character:GetChildren()) do
+				if (part:IsA("BasePart") or part:IsA("MeshPart") or part:IsA("Part")) and part.Name ~= "HumanoidRootPart" then
+					local cloned_part = desync.clone:FindFirstChild(part.Name)
+					if cloned_part then
+						cloned_part.CFrame = part.CFrame
+					end
+				end
+			end
+		end
+		
+		lp.Character.HumanoidRootPart.CFrame = desync.old_position
+	end)
+	
+	desync.update_cham_properties = function()
+		if not desync.cham or not desync.clone then return end
+		local Highlight = desync.cham
+		Highlight.Enabled = Library.Flags["desync_cham_highlight"] ~= false
+		
+		local material = Library.Flags["desync_cham_material"] or "ForceField"
+		local texture = Library.Flags["desync_material_texture"] or "None"
+		local reflectance = Library.Flags["desync_cham_reflectance"] or 0
+		
+		for _, part in pairs(desync.clone:GetChildren()) do
+			if (part:IsA("BasePart") or part:IsA("MeshPart") or part:IsA("Part")) and part.Name ~= "HumanoidRootPart" then
+				local chamColor = Library.Flags["desync_part_color"]
+				part.Color = (type(chamColor) == "table" and chamColor.Color) or chamColor or Color3.fromRGB(255, 0, 0)
+				part.Material = Enum.Material[material] or Enum.Material.ForceField
+				
+				if material == "ForceField" and texture ~= "None" then
+					part.TextureID = utility.textures[texture] or ""
+				elseif material == "Plastic" then
+					part.Reflectance = reflectance
+					part.TextureID = ""
+				else
+					part.TextureID = ""
+				end
+			end
+		end
+		
+		if Highlight.Enabled then
+			Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+			local fillColor = Library.Flags["desync_visualizer_fill"]
+			local outlineColor = Library.Flags["desync_visualizer_outline"]
+			Highlight.FillColor = (type(fillColor) == "table" and fillColor.Color) or fillColor or Color3.fromRGB(0, 255, 255)
+			Highlight.OutlineColor = (type(outlineColor) == "table" and outlineColor.Color) or outlineColor or Color3.fromRGB(0, 0, 0)
+			local fillAlpha = (type(fillColor) == "table" and fillColor.Transparency) or 0.5
+			local outlineAlpha = (type(outlineColor) == "table" and outlineColor.Transparency) or 0
+			Highlight.OutlineTransparency = 1 - outlineAlpha
+			Highlight.FillTransparency = 1 - fillAlpha
+		end
+	end
+	
+	desync.state = LPH_NO_VIRTUALIZE(function()
+		if not lp.Character or not lp.Character:FindFirstChild("Humanoid") then return false end
+		
+		local magnitude = lp.Character.Humanoid.MoveDirection.magnitude
+		local mode = Library.Flags["desync_mode"] or "Always"
+		
+		if mode == "Standing Only" then
+			if magnitude > 0 then return false end
+		elseif mode == "Moving Only" then
+			if magnitude == 0 then return false end
+		elseif mode == "Target Only" then
+			if not (target and target.Character) then return false end
+		end
+		
+		return true
+	end)
+	
+	desync.think = LPH_NO_VIRTUALIZE(function()
+		local spoofer = desync.main_enabled
+		local is_destroying = desync.dc_enabled
+		local active = spoofer or is_destroying
+		
+		if active then
+			local state = desync.state()
+			if not state then return end
+			
+			if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+			
+			local hrp_cf = lp.Character.HumanoidRootPart.CFrame
+			local attachToTarget = Library.Flags["attach_to_target"] and target and target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+			local origin = attachToTarget and target.Character.HumanoidRootPart.CFrame or hrp_cf
+			
+			if spoofer then
+				local positionPreset = Library.Flags["desync_position_preset"] or "None"
+				local rotationPreset = Library.Flags["desync_rotation_preset"] or "None"
+				desync.calculate_position(origin, positionPreset, rotationPreset)
+				
+				-- Apply custom rotation if enabled
+				if Library.Flags["custom_rotation"] then
+					local pitch = Library.Flags["pitch"] or 0
+					local yaw = Library.Flags["yaw"] or 0
+					local roll = Library.Flags["roll"] or 0
+					desync.final_position = desync.final_position * angle(rad(pitch), rad(yaw), rad(roll))
+				end
+			end
+			
+			if is_destroying then
+				desync.calculate_dc(origin)
+			end
+			
+			desync.init(desync.final_position, Library.Flags["desync_visualize"])
+			desync.update_cham_properties()
+		end
+	end)
+	
+	-- Desync Hook (will be set in Rage section where variables are in scope)
+	-- Run Desync Think Loop
+	run.Heartbeat:Connect(function(delta)
+		local strafeSpeed = Library.Flags["desync_strafe_speed"] or 0
+		desync.radians = desync.radians + (strafeSpeed * 0.1)
+		desync.think()
+	end)
+	
+	-- Misc Functions Implementation
+	local misc = {
+		auto_shoot_clock = tick(),
+		buying_armor = nil
+	}
+	
+	misc.speed = LPH_NO_VIRTUALIZE(function()
+		local speedEnabled = Library.Flags[SpeedToggle.Flag]
+		local speedKeybindActive = Library.Flags[SpeedKeybind.Flag .. "_KEY STATE"] == "Always" or
+			(Library.Flags[SpeedKeybind.Flag .. "_KEY STATE"] == "Hold" and Library.Flags[SpeedKeybind.Flag .. "_KEY"])
+		
+		if speedEnabled and speedKeybindActive and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") and lp.Character:FindFirstChild("Humanoid") then
+			local char = lp.Character
+			local move_dir = char.Humanoid.MoveDirection
+			local amount = Library.Flags[SpeedAmount.Flag] or 10
+			char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame + (move_dir * (amount / 20))
+		end
+	end)
+	
+	misc.fly = function(delta)
+		local flyEnabled = Library.Flags[FlyToggle.Flag]
+		local flyKeybindActive = Library.Flags[FlyKeybind.Flag .. "_KEY STATE"] == "Always" or
+			(Library.Flags[FlyKeybind.Flag .. "_KEY STATE"] == "Hold" and Library.Flags[FlyKeybind.Flag .. "_KEY"])
+		
+		if flyEnabled and flyKeybindActive and lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+			local char = lp.Character
+			char.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+			
+			local x, y, z = 0, 0, 0
+			if uis:IsKeyDown(Enum.KeyCode.W) then z = z - 1 end
+			if uis:IsKeyDown(Enum.KeyCode.S) then z = z + 1 end
+			if uis:IsKeyDown(Enum.KeyCode.D) then x = x + 1 end
+			if uis:IsKeyDown(Enum.KeyCode.A) then x = x - 1 end
+			if uis:IsKeyDown(Enum.KeyCode.Space) then y = y + 1 end
+			if uis:IsKeyDown(Enum.KeyCode.LeftShift) then y = y - 1 end
+			
+			local direction = camera.CFrame:VectorToWorldSpace(Vector3.new(x, 0, z).Unit)
+			local amount = Library.Flags[FlyAmount.Flag] or 20
+			char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame + ((direction + Vector3.new(0, y, 0)) * (amount / 10) * (delta * 60))
+		end
+	end
+	
+	misc.auto_shoot = LPH_NO_VIRTUALIZE(function()
+		if Library.Flags[AutoShootToggle.Flag] then
+			local handle = utility.get_tool_handle()
+			local gun = handle and handle.Parent
+			local delay = Library.Flags[AutoShootDelay.Flag] or 50
+			
+			if tick() - misc.auto_shoot_clock > (delay / 1000) and gun then
+				misc.auto_shoot_clock = tick()
+				gun:Activate()
+			end
+		end
+	end)
+	
+	misc.auto_armor = LPH_NO_VIRTUALIZE(function()
+		if not Library.Flags[AutoArmorToggle.Flag] then return end
+		if not lp.Character then return end
+		
+		local bodyEffects = lp.Character:FindFirstChild("BodyEffects")
+		if bodyEffects and bodyEffects:FindFirstChild("Armor") then
+			local armor = bodyEffects.Armor.Value
+			if armor < 100 then
+				local shop = ws:FindFirstChild("Ignored")
+				if shop then
+					shop = shop:FindFirstChild("Shop")
+					if shop then
+						local armorShop = shop:FindFirstChild("[High-Medium Armor] - $2440")
+						if armorShop and armorShop:FindFirstChild("Head") and armorShop:FindFirstChild("ClickDetector") then
+							misc.buying_armor = lp.Character.HumanoidRootPart.CFrame
+							lp.Character.HumanoidRootPart.CFrame = armorShop.Head.CFrame
+							fireclickdetector(armorShop.ClickDetector)
+							run.RenderStepped:Wait()
+							if misc.buying_armor then
+								lp.Character.HumanoidRootPart.CFrame = misc.buying_armor
+								misc.buying_armor = nil
+							end
+						end
+					end
+				end
+			end
+		end
+	end)
+	
+	misc.no_slow = LPH_NO_VIRTUALIZE(function()
+		if not Library.Flags[NoSlowToggle.Flag] then return end
+		if not lp.Character then return end
+		
+		local bodyEffects = lp.Character:FindFirstChild("BodyEffects")
+		if bodyEffects then
+			if bodyEffects:FindFirstChild("Reload") then
+				bodyEffects.Reload.Value = false
+			end
+			
+			local movement = bodyEffects:FindFirstChild("Movement")
+			if movement then
+				for _, child in pairs(movement:GetChildren()) do
+					if child.Name == "NoJumping" or child.Name == "NoWalkSpeed" or child.Name == "ReduceWalk" then
+						child:Destroy()
+					end
+				end
+			end
+		end
+	end)
+	
+	misc.auto_jump = LPH_NO_VIRTUALIZE(function()
+		if Library.Flags[AutoJumpToggle.Flag] and lp.Character and lp.Character:FindFirstChild("Humanoid") then
+			local hum = lp.Character.Humanoid
+			if hum:GetState() ~= Enum.HumanoidStateType.Freefall then
+				hum:ChangeState(Enum.HumanoidStateType.Jumping)
+			end
+		end
+	end)
+	
+	misc.auto_reload = function()
+		if not Library.Flags[AutoReloadToggle.Flag] then return end
+		
+		local handle = utility.get_tool_handle()
+		local gun = handle and handle.Parent
+		if gun and gun:FindFirstChild("Ammo") then
+			local ammo = gun.Ammo.Value
+			if ammo <= 0 then
+				local mainEvent = rs:FindFirstChild("MainEvent")
+				if mainEvent then
+					mainEvent:FireServer("Reload", gun)
+				end
+			end
+		end
+	end
+	
+	misc.edit_aspect_ratio = LPH_NO_VIRTUALIZE(function()
+		if Library.Flags[AspectRatioToggle.Flag] then
+			local X, Y, Z, R00, R01, R02, R10, R11, R12, R20, R21, R22 = camera.CFrame:GetComponents()
+			local horizontal = Library.Flags[HorizontalAspectRatio.Flag] or 1
+			local vertical = Library.Flags[VerticalAspectRatio.Flag] or 1
+			camera.CFrame = CFrame.new(X, Y, Z, R00 * horizontal, R01 * vertical, R02, R10, R11 * vertical, R12, R20 * horizontal, R21 * vertical, R22)
+		end
+	end)
+	
+	misc.is_safe_unit = LPH_NO_VIRTUALIZE(function(unit)
+		if unit.Magnitude > 1e-8 then
+			return unit
+		end
+		return Vector3.new(0, 0, 0)
+	end)
+	
+	-- Run Misc Functions Loop
+	run.Heartbeat:Connect(function(delta)
+		misc.speed()
+		misc.auto_jump()
+		misc.fly(delta)
+		misc.auto_shoot()
+		misc.auto_armor()
+		misc.no_slow()
+	end)
+	
+	run.RenderStepped:Connect(function()
+		misc.edit_aspect_ratio()
+	end)
+	
+	-- Auto Reload Connection
+	lp.CharacterAdded:Connect(function(character)
+		character.ChildAdded:Connect(function(child)
+			if child:IsA("Tool") and child:FindFirstChild("Ammo") and child:FindFirstChild("GunScript") then
+				child.Ammo:GetPropertyChangedSignal("Value"):Connect(function()
+					misc.auto_reload()
+				end)
+			end
+		end)
+	end)
+	
+	if lp.Character then
+		for _, child in pairs(lp.Character:GetChildren()) do
+			if child:IsA("Tool") and child:FindFirstChild("Ammo") and child:FindFirstChild("GunScript") then
+				child.Ammo:GetPropertyChangedSignal("Value"):Connect(function()
+					misc.auto_reload()
+				end)
+			end
+		end
+	end
+	
+	-- Additional Features: Anti Void Kill, Infinite Zoom, Show Chat, No Jump Cooldown
+	AntiVoidKillToggle.Callback = function(state)
+		workspace.FallenPartsDestroyHeight = state and -50000 or -500
+	end
+	
+	InfiniteZoomToggle.Callback = function(state)
+		lp.CameraMaxZoomDistance = state and 9e9 or 30
+	end
+	
+	ShowChatToggle.Callback = function(state)
+		local chatGui = lp.PlayerGui:FindFirstChild("Chat")
+		if chatGui and chatGui:FindFirstChild("Frame") then
+			local chatChannel = chatGui.Frame:FindFirstChild("ChatChannelParentFrame")
+			if chatChannel then
+				chatChannel.Visible = state
+			end
+		end
+	end
+	
+	NoJumpCooldownToggle.Callback = function(state)
+		if lp.Character and lp.Character:FindFirstChild("Humanoid") then
+			lp.Character.Humanoid.UseJumpPower = not state
+		end
+	end
+	
+	lp.CharacterAdded:Connect(function()
+		if Library.Flags[NoJumpCooldownToggle.Flag] then
+			lp.Character.Humanoid.UseJumpPower = false
+		end
+		if Library.Flags[InfiniteZoomToggle.Flag] then
+			lp.CameraMaxZoomDistance = 9e9
+		end
+	end)
+	
+	-- ESP Implementation (Basic - Full ESP would require extensive Drawing API usage)
+	-- For now, we'll use Highlights for ESP Chams
+	local esp_holder = Instance.new("ScreenGui")
+	esp_holder.Name = "ESPHolder"
+	esp_holder.ResetOnSpawn = false
+	esp_holder.IgnoreGuiInset = true
+	esp_holder.DisplayOrder = -1
+	esp_holder.Parent = coregui
+	
+	local esp_highlights = {}
+	
+	local function createESP(player)
+		if esp_highlights[player] then return end
+		
+		local highlight = Instance.new("Highlight")
+		highlight.Name = "ESPHighlight"
+		highlight.Enabled = false
+		highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+		highlight.FillColor = Color3.fromRGB(186, 171, 255)
+		highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+		highlight.FillTransparency = 0.5
+		highlight.OutlineTransparency = 0
+		highlight.Parent = coregui
+		highlight.Adornee = player.Character
+		
+		esp_highlights[player] = highlight
+	end
+	
+	local function removeESP(player)
+		if esp_highlights[player] then
+			esp_highlights[player]:Destroy()
+			esp_highlights[player] = nil
+		end
+	end
+	
+	ESPEnabledToggle.Callback = function(state)
+		for player, highlight in pairs(esp_highlights) do
+			highlight.Enabled = state
+		end
+	end
+	
+	ESPChamsToggle.Callback = function(state)
+		for player, highlight in pairs(esp_highlights) do
+			highlight.Enabled = state and Library.Flags[ESPEnabledToggle.Flag]
+		end
+	end
+	
+	ESPChamsFill.Callback = function(color, alpha)
+		for player, highlight in pairs(esp_highlights) do
+			highlight.FillColor = color
+			highlight.FillTransparency = 1 - (alpha or 0.5)
+		end
+	end
+	
+	ESPChamsOutline.Callback = function(color, alpha)
+		for player, highlight in pairs(esp_highlights) do
+			highlight.OutlineColor = color
+			highlight.OutlineTransparency = 1 - (alpha or 1)
+		end
+	end
+	
+	players.PlayerAdded:Connect(function(player)
+		player.CharacterAdded:Connect(function()
+			if Library.Flags[ESPEnabledToggle.Flag] then
+				createESP(player)
+			end
+		end)
+		if player.Character and Library.Flags[ESPEnabledToggle.Flag] then
+			createESP(player)
+		end
+	end)
+	
+	players.PlayerRemoving:Connect(function(player)
+		removeESP(player)
+	end)
+	
+	-- Initialize ESP for existing players
+	for _, player in pairs(players:GetPlayers()) do
+		if player ~= lp and player.Character and Library.Flags[ESPEnabledToggle.Flag] then
+			createESP(player)
+		end
+	end
+	
+	-- World Visuals Implementation
+	local lighting_save = {
+		Ambient = lighting.Ambient,
+		OutdoorAmbient = lighting.OutdoorAmbient,
+		FogColor = lighting.FogColor,
+		FogEnd = lighting.FogEnd,
+		FogStart = lighting.FogStart,
+		ClockTime = lighting.ClockTime
+	}
+	
+	local function update_world()
+		-- Ambience
+		if Library.Flags[AmbientToggle.Flag] then
+			lighting.Ambient = Library.Flags[OutdoorAmbience.Flag] or lighting_save.Ambient
+			lighting.OutdoorAmbient = Library.Flags[IndoorAmbience.Flag] or lighting_save.OutdoorAmbient
+		else
+			lighting.Ambient = lighting_save.Ambient
+			lighting.OutdoorAmbient = lighting_save.OutdoorAmbient
+		end
+		
+		-- Time Of Day
+		if Library.Flags[ForceTimeOfDayToggle.Flag] then
+			lighting.ClockTime = Library.Flags[TimeOfDay.Flag] or 12
+		else
+			lighting.ClockTime = lighting_save.ClockTime
+		end
+		
+		-- Fog
+		if Library.Flags[FogToggle.Flag] then
+			lighting.FogColor = Library.Flags[FogColor.Flag] or lighting_save.FogColor
+			lighting.FogEnd = Library.Flags[FogEnd.Flag] or lighting_save.FogEnd
+			lighting.FogStart = Library.Flags[FogStart.Flag] or lighting_save.FogStart
+		else
+			lighting.FogColor = lighting_save.FogColor
+			lighting.FogEnd = lighting_save.FogEnd
+			lighting.FogStart = lighting_save.FogStart
+		end
+		
+		-- Color Correction
+		local colorCorrection = lighting:FindFirstChild("ColorCorrection") or Instance.new("ColorCorrection")
+		colorCorrection.Parent = lighting
+		colorCorrection.Enabled = Library.Flags[ColorCorrectionToggle.Flag] or false
+		if Library.Flags[ColorCorrectionToggle.Flag] then
+			if Library.Flags[TintToggle.Flag] then
+				colorCorrection.TintColor = Library.Flags[CorrectionTint.Flag] or Color3.fromRGB(255, 255, 255)
+			end
+			colorCorrection.Saturation = Library.Flags[CorrectionSaturation.Flag] or 0
+			colorCorrection.Contrast = Library.Flags[CorrectionContrast.Flag] or 0
+			colorCorrection.Brightness = Library.Flags[CorrectionBrightness.Flag] or 0
+		end
+		
+		-- Atmosphere
+		local atmosphere = lighting:FindFirstChild("Atmosphere") or Instance.new("Atmosphere")
+		atmosphere.Parent = lighting
+		if Library.Flags[AtmosphereToggle.Flag] then
+			atmosphere.Color = Library.Flags[AtmosphereAmbience.Flag] or Color3.fromRGB(255, 255, 255)
+			atmosphere.Decay = Library.Flags[AtmosphereDecay.Flag] or Color3.fromRGB(255, 255, 255)
+			atmosphere.Glare = Library.Flags[AtmosphereGlare.Flag] or 0
+			atmosphere.Haze = Library.Flags[AtmosphereHaze.Flag] or 0
+			atmosphere.Density = Library.Flags[AtmosphereDensity.Flag] or 0
+		else
+			atmosphere.Parent = coregui
+		end
+		
+		-- Bloom
+		local bloom = lighting:FindFirstChild("BloomEffect") or Instance.new("BloomEffect")
+		bloom.Parent = lighting
+		if Library.Flags[BloomToggle.Flag] then
+			bloom.Threshold = Library.Flags[BloomThreshold.Flag] or 0.3
+			bloom.Size = Library.Flags[BloomSize.Flag] or 1000
+			bloom.Intensity = Library.Flags[BloomIntensity.Flag] or 1
+		else
+			bloom.Intensity = 0.8
+			bloom.Size = 24
+			bloom.Threshold = 2
+		end
+	end
+	
+	-- World Visuals Callbacks
+	AmbientToggle.Callback = update_world
+	OutdoorAmbience.Callback = update_world
+	IndoorAmbience.Callback = update_world
+	ForceTimeOfDayToggle.Callback = update_world
+	TimeOfDay.Callback = update_world
+	FogToggle.Callback = update_world
+	FogColor.Callback = update_world
+	FogStart.Callback = update_world
+	FogEnd.Callback = update_world
+	ColorCorrectionToggle.Callback = update_world
+	TintToggle.Callback = update_world
+	CorrectionTint.Callback = update_world
+	CorrectionSaturation.Callback = update_world
+	CorrectionContrast.Callback = update_world
+	CorrectionBrightness.Callback = update_world
+	AtmosphereToggle.Callback = update_world
+	AtmosphereAmbience.Callback = update_world
+	AtmosphereDecay.Callback = update_world
+	AtmosphereGlare.Callback = update_world
+	AtmosphereHaze.Callback = update_world
+	AtmosphereDensity.Callback = update_world
+	BloomToggle.Callback = update_world
+	BloomThreshold.Callback = update_world
+	BloomSize.Callback = update_world
+	BloomIntensity.Callback = update_world
+	
+	-- Local Player Visuals Implementation
+	local char_save = {}
+	local old_gun_textures = {}
+	local local_highlight = Instance.new("Highlight")
+	local_highlight.Enabled = false
+	local_highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+	local_highlight.FillColor = Color3.fromRGB(0, 0, 0)
+	local_highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+	local_highlight.OutlineTransparency = 0.5
+	local_highlight.FillTransparency = 0
+	local_highlight.Parent = coregui
+	
+	local function save_character()
+		if not lp.Character then return end
+		char_save = {}
+		for _, v in next, lp.Character:GetChildren() do
+			if v:IsA("BasePart") and v.Name ~= "Handle" and v.Name ~= "HumanoidRootPart" then
+				char_save[v.Name] = {v.Color, v.TextureID}
+			elseif v:IsA("Accessory") and v:FindFirstChild("Handle") then
+				char_save[v.Name] = v.Handle.TextureID
+			end
+		end
+	end
+	
+	local function update_character_chams()
+		if not lp.Character then return end
+		
+		if not Library.Flags[CharacterChamsToggle.Flag] then
+			for _, v in next, lp.Character:GetChildren() do
+				if v:IsA("BasePart") and v.Name ~= "Handle" and v.Name ~= "HumanoidRootPart" then
+					if char_save[v.Name] then
+						v.Color = char_save[v.Name][1]
+						v.Transparency = 0
+						v.Material = Enum.Material.Plastic
+						v.TextureID = char_save[v.Name][2]
+					end
+				end
+			end
+			return
+		end
+		
+		for _, v in next, lp.Character:GetChildren() do
+			if v:IsA("BasePart") and v.Name ~= "Handle" and v.Name ~= "HumanoidRootPart" then
+				v.Color = Library.Flags[CharacterChamsColor.Flag] or Color3.fromRGB(255, 255, 255)
+				local alpha = Library.Flags[CharacterChamsColor.Flag] and (type(Library.Flags[CharacterChamsColor.Flag]) == "table" and Library.Flags[CharacterChamsColor.Flag].Transparency or 0) or 0
+				v.Transparency = 1 - alpha
+				v.Material = Enum.Material.ForceField
+				local texture = Library.Flags[LocalPlayerTexture.Flag] or "None"
+				v.TextureID = utility.textures[texture] or ""
+			end
+		end
+		
+		if Library.Flags[CharacterHighlightToggle.Flag] and not Library.Flags[GunHighlightToggle.Flag] then
+			local_highlight.Enabled = true
+			local_highlight.Adornee = lp.Character
+			local_highlight.FillColor = Library.Flags[CharacterFill.Flag] or Color3.fromRGB(186, 171, 255)
+			local_highlight.OutlineColor = Library.Flags[CharacterOutline.Flag] or Color3.fromRGB(0, 0, 0)
+			local fillAlpha = Library.Flags[CharacterFill.Flag] and (type(Library.Flags[CharacterFill.Flag]) == "table" and Library.Flags[CharacterFill.Flag].Transparency or 0.5) or 0.5
+			local outlineAlpha = Library.Flags[CharacterOutline.Flag] and (type(Library.Flags[CharacterOutline.Flag]) == "table" and Library.Flags[CharacterOutline.Flag].Transparency or 1) or 1
+			local_highlight.OutlineTransparency = 1 - outlineAlpha
+			local_highlight.FillTransparency = 1 - fillAlpha
+		else
+			local_highlight.Enabled = false
+		end
+	end
+	
+	local function update_accessory_chams()
+		if not lp.Character then return end
+		
+		if not Library.Flags[AccessoryChamsToggle.Flag] then
+			for _, v in next, lp.Character:GetChildren() do
+				if v:IsA("Accessory") and v:FindFirstChild("Handle") then
+					v.Handle.Transparency = 0
+					v.Handle.Material = Enum.Material.Plastic
+					if char_save[v.Name] then
+						v.Handle.TextureID = char_save[v.Name]
+					end
+				end
+			end
+			return
+		end
+		
+		for _, v in next, lp.Character:GetChildren() do
+			if v:IsA("Accessory") and v:FindFirstChild("Handle") then
+				v.Handle.Color = Library.Flags[AccessoryChamsColor.Flag] or Color3.fromRGB(255, 255, 255)
+				local alpha = Library.Flags[AccessoryChamsColor.Flag] and (type(Library.Flags[AccessoryChamsColor.Flag]) == "table" and Library.Flags[AccessoryChamsColor.Flag].Transparency or 0) or 0
+				v.Handle.Transparency = 1 - alpha
+				v.Handle.Material = Enum.Material.ForceField
+				local texture = Library.Flags[LocalPlayerTexture.Flag] or "None"
+				v.Handle.TextureID = utility.textures[texture] or ""
+			end
+		end
+	end
+	
+	local function update_gun_chams()
+		if not lp.Character then return end
+		local tool = lp.Character:FindFirstChildWhichIsA("Tool")
+		
+		if not Library.Flags[GunChamsToggle.Flag] then
+			for _, v in next, lp.Character:GetChildren() do
+				if v:IsA("Tool") and v:FindFirstChild("Default") then
+					v.Default.Material = Enum.Material.Plastic
+					if old_gun_textures[v.Name] then
+						v.Default.TextureID = old_gun_textures[v.Name]
+					end
+				end
+			end
+			
+			for _, v in next, lp.Backpack:GetChildren() do
+				if v.Name ~= "[Wallet]" and v:IsA("Tool") and v:FindFirstChild("Default") then
+					v.Default.Material = Enum.Material.Plastic
+					if old_gun_textures[v.Name] then
+						v.Default.TextureID = old_gun_textures[v.Name]
+					end
+				end
+			end
+			return
+		end
+		
+		if tool and tool:FindFirstChild("Default") then
+			tool.Default.Color = Library.Flags[GunColor.Flag] or Color3.fromRGB(255, 255, 255)
+			local alpha = Library.Flags[GunColor.Flag] and (type(Library.Flags[GunColor.Flag]) == "table" and Library.Flags[GunColor.Flag].Transparency or 0) or 0
+			tool.Default.Transparency = 1 - alpha
+			tool.Default.Material = Enum.Material[Library.Flags[GunMaterial.Flag] or "ForceField"]
+			
+			local material = Library.Flags[GunMaterial.Flag] or "ForceField"
+			if material == "ForceField" then
+				local texture = Library.Flags[GunTexture.Flag] or "None"
+				tool.Default.TextureID = utility.textures[texture] or ""
+				old_gun_textures[tool.Name] = tool.Default.TextureID
+			elseif material == "Plastic" then
+				tool.Default.Reflectance = Library.Flags[GunReflectance.Flag] or 0
+				tool.Default.TextureID = ""
+			else
+				tool.Default.TextureID = ""
+			end
+		end
+		
+		if Library.Flags[GunHighlightToggle.Flag] then
+			local_highlight.Enabled = true
+			local_highlight.Adornee = tool
+			local_highlight.FillColor = Library.Flags[CharacterFill.Flag] or Color3.fromRGB(186, 171, 255)
+			local_highlight.OutlineColor = Library.Flags[CharacterOutline.Flag] or Color3.fromRGB(0, 0, 0)
+		elseif not Library.Flags[CharacterHighlightToggle.Flag] then
+			local_highlight.Enabled = false
+		end
+	end
+	
+	CharacterChamsToggle.Callback = function(state)
+		save_character()
+		update_character_chams()
+	end
+	
+	CharacterChamsColor.Callback = function(color)
+		update_character_chams()
+	end
+	
+	LocalPlayerTexture.Callback = function(option)
+		update_character_chams()
+		update_accessory_chams()
+		update_gun_chams()
+	end
+	
+	CharacterHighlightToggle.Callback = function(state)
+		update_character_chams()
+	end
+	
+	CharacterFill.Callback = function(color, alpha)
+		update_character_chams()
+	end
+	
+	CharacterOutline.Callback = function(color, alpha)
+		update_character_chams()
+	end
+	
+	AccessoryChamsToggle.Callback = function(state)
+		save_character()
+		update_accessory_chams()
+	end
+	
+	AccessoryChamsColor.Callback = function(color)
+		update_accessory_chams()
+	end
+	
+	GunChamsToggle.Callback = function(state)
+		update_gun_chams()
+	end
+	
+	GunColor.Callback = function(color)
+		update_gun_chams()
+	end
+	
+	GunMaterial.Callback = function(option)
+		update_gun_chams()
+	end
+	
+	GunReflectance.Callback = function(value)
+		update_gun_chams()
+	end
+	
+	GunTexture.Callback = function(option)
+		update_gun_chams()
+	end
+	
+	GunHighlightToggle.Callback = function(state)
+		update_gun_chams()
+	end
+	
+	-- Trail Implementation
+	local trail_attachments = {}
+	local current_trail = nil
+	
+	local function apply_trail(trailType)
+		-- Clean up existing trail
+		if current_trail then
+			current_trail:Destroy()
+			current_trail = nil
+		end
+		
+		for _, attachment in pairs(trail_attachments) do
+			if attachment then attachment:Destroy() end
+		end
+		trail_attachments = {}
+		
+		if trailType == "None" or not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then
+			return
+		end
+		
+		local hrp = lp.Character.HumanoidRootPart
+		local AT1 = Instance.new("Attachment")
+		AT1.Parent = hrp
+		AT1.CFrame = CFrame.new(0, 0, 0.687942505)
+		
+		local AT2 = Instance.new("Attachment")
+		AT2.Parent = hrp
+		AT2.CFrame = CFrame.new(0, 0, -0.677116394)
+		
+		table.insert(trail_attachments, AT1)
+		table.insert(trail_attachments, AT2)
+		
+		local trail = Instance.new("Trail")
+		trail.Parent = hrp
+		trail.FaceCamera = true
+		trail.WidthScale = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1),
+			NumberSequenceKeypoint.new(1, 0)
+		})
+		trail.Attachment0 = AT1
+		trail.Attachment1 = AT2
+		
+		if trailType == "Bright" then
+			trail.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0),
+				NumberSequenceKeypoint.new(1, 0)
+			})
+			trail.Lifetime = 1
+			trail.Brightness = 20
+			trail.Texture = "rbxassetid://9234319472"
+		elseif trailType == "Dash" then
+			trail.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0),
+				NumberSequenceKeypoint.new(1, 0)
+			})
+			trail.Texture = "http://www.roblox.com/asset/?id=13703813488"
+			trail.Lifetime = 0.25
+			trail.LightEmission = 1
+			trail.Brightness = 20
+		elseif trailType == "Shadow" then
+			trail.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0),
+				NumberSequenceKeypoint.new(1, 0)
+			})
+			trail.Lifetime = 1
+			trail.Texture = "rbxassetid://9234319472"
+		elseif trailType == "Basic" then
+			trail.Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 168, 28)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 168, 28))
+			})
+			trail.WidthScale = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.04),
+				NumberSequenceKeypoint.new(1, 0.04)
+			})
+			trail.MaxLength = 400
+			trail.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0),
+				NumberSequenceKeypoint.new(0.001, 0.5),
+				NumberSequenceKeypoint.new(1, 0.5)
+			})
+			trail.LightEmission = 1
+			trail.MinLength = 0
+			trail.TextureMode = Enum.TextureMode.Static
+		end
+		
+		current_trail = trail
+	end
+	
+	LocalTrail.Callback = function(option)
+		apply_trail(option)
+	end
+	
+	-- Initialize character visuals on spawn
+	lp.CharacterAdded:Connect(function()
+		save_character()
+		task.wait(1)
+		update_character_chams()
+		update_accessory_chams()
+		update_gun_chams()
+		
+		local trailType = Library.Flags[LocalTrail.Flag] or "None"
+		if trailType ~= "None" then
+			apply_trail(trailType)
+		end
+		
+		if Library.Flags[NoJumpCooldownToggle.Flag] then
+			lp.Character.Humanoid.UseJumpPower = false
+		end
+		
+		lp.Character.ChildAdded:Connect(function(child)
+			if child:IsA("Tool") and child:FindFirstChild("Ammo") and child:FindFirstChild("GunScript") then
+				child.Ammo:GetPropertyChangedSignal("Value"):Connect(function()
+					misc.auto_reload()
+				end)
+			end
+			update_gun_chams()
+		end)
+	end)
+	
+	-- Initialize on current character
+	if lp.Character then
+		save_character()
+		update_character_chams()
+		update_accessory_chams()
+		update_gun_chams()
+	end
+	
+	-- Hit Detection Implementation (Basic)
+	local hit_detection = {
+		health_factor = nil,
+		current_player = nil,
+		data = {},
+		origin = nil,
+		end_point = nil
+	}
+	
+	local hit_cham_highlight = Instance.new("Highlight")
+	hit_cham_highlight.Enabled = false
+	hit_cham_highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+	hit_cham_highlight.FillColor = Color3.fromRGB(255, 255, 255)
+	hit_cham_highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+	hit_cham_highlight.Parent = coregui
+	
+	local hit_sound_item = Instance.new("Sound")
+	hit_sound_item.Volume = 1
+	hit_sound_item.Pitch = 1
+	hit_sound_item.Parent = ws
+	
+	local hit_sound_pitch = Instance.new("PitchShiftSoundEffect")
+	hit_sound_pitch.Octave = 1
+	hit_sound_pitch.Parent = hit_sound_item
+	
+	HitDetectionToggle.Callback = function(state) end
+	
+	HitChamToggle.Callback = function(state)
+		hit_cham_highlight.Enabled = state and Library.Flags[HitDetectionToggle.Flag]
+	end
+	
+	HitChamsColor.Callback = function(color)
+		if hit_detection.current_player and hit_detection.current_player.Character then
+			hit_cham_highlight.Adornee = hit_detection.current_player.Character
+		end
+	end
+	
+	HitChamHighlightToggle.Callback = function(state)
+		hit_cham_highlight.Enabled = state
+	end
+	
+	HitChamsFillColor.Callback = function(color, alpha)
+		hit_cham_highlight.FillColor = color
+		hit_cham_highlight.FillTransparency = 1 - (alpha or 0.5)
+	end
+	
+	HitChamsOutlineColor.Callback = function(color, alpha)
+		hit_cham_highlight.OutlineColor = color
+		hit_cham_highlight.OutlineTransparency = 1 - (alpha or 1)
+	end
+	
+	HitMaterial.Callback = function(option)
+		if hit_detection.current_player and hit_detection.current_player.Character then
+			for _, part in pairs(hit_detection.current_player.Character:GetChildren()) do
+				if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+					part.Material = Enum.Material[option] or Enum.Material.ForceField
+				end
+			end
+		end
+	end
+	
+	HitSoundToggle.Callback = function(state) end
+	
+	HitSoundVolume.Callback = function(value)
+		hit_sound_item.Volume = value
+	end
+	
+	HitSoundPitch.Callback = function(value)
+		hit_sound_pitch.Octave = value
+	end
+	
+	-- Bullet Tracers Implementation (Beam)
+	local tracers_ids = {
+		["Double Helix"] = "rbxassetid://17883759215",
+		["Electric"] = "rbxassetid://17883758506",
+		["Electric + Glow"] = "rbxassetid://17883757540",
+		["Fade"] = "rbxassetid://17883755728",
+		["Pulsate"] = "rbxassetid://17883754203",
+		["Red Lazer"] = "rbxassetid://17883752796",
+		["Smoke"] = "rbxassetid://17883751394",
+		["Warp"] = "rbxassetid://17883749876",
+		["1"] = "rbxassetid://1",
+		["2"] = "rbxassetid://2",
+		["3"] = "rbxassetid://3"
+	}
+	
+	local function new_beam(origin, end_point)
+		if not Library.Flags[BulletTracersToggle.Flag] then return end
+		
+		local beam_part = Instance.new("Part")
+		beam_part.Anchored = true
+		beam_part.CanCollide = false
+		beam_part.Transparency = 1
+		beam_part.Size = Vector3.new(0.1, 0.1, 0.1)
+		beam_part.CFrame = CFrame.new(origin)
+		beam_part.Parent = ws
+		
+		local attachment0 = Instance.new("Attachment")
+		attachment0.Parent = beam_part
+		attachment0.Position = Vector3.new(0, 0, 0)
+		
+		local attachment1 = Instance.new("Attachment")
+		attachment1.Parent = beam_part
+		attachment1.Position = (end_point - origin)
+		
+		local beam = Instance.new("Beam")
+		beam.Parent = beam_part
+		beam.Attachment0 = attachment0
+		beam.Attachment1 = attachment1
+		beam.FaceCamera = Library.Flags[BeamFaceCamera.Flag] or true
+		beam.Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Library.Flags[BeamSettings0.Flag] or Color3.fromRGB(255, 255, 255)),
+			ColorSequenceKeypoint.new(1, Library.Flags[BeamSettings1.Flag] or Color3.fromRGB(255, 255, 255))
+		})
+		
+		local startAlpha = Library.Flags[BeamSettings0.Flag] and (type(Library.Flags[BeamSettings0.Flag]) == "table" and Library.Flags[BeamSettings0.Flag].Transparency or 0) or 0
+		local endAlpha = Library.Flags[BeamSettings1.Flag] and (type(Library.Flags[BeamSettings1.Flag]) == "table" and Library.Flags[BeamSettings1.Flag].Transparency or 0) or 0
+		
+		beam.Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1 - startAlpha),
+			NumberSequenceKeypoint.new(1, 1 - endAlpha)
+		})
+		
+		beam.LightEmission = Library.Flags[BeamEmission.Flag] or 1
+		beam.Segments = (Library.Flags[BeamSegments.Flag] or 5) * 10
+		beam.LightInfluence = Library.Flags[BeamInfluence.Flag] or 1
+		beam.Width0 = Library.Flags[BeamWidth.Flag] or 1
+		beam.Width1 = Library.Flags[BeamWidth.Flag] or 1
+		beam.TextureLength = Library.Flags[BeamLength.Flag] or 2
+		beam.TextureSpeed = Library.Flags[BeamSpeed.Flag] or 0.5
+		beam.Texture = tracers_ids[Library.Flags[BeamTexture.Flag] or "Double Helix"] or tracers_ids["Double Helix"]
+		beam.CurveSize0 = Library.Flags[BeamCurve0.Flag] or 0.5
+		beam.CurveSize1 = Library.Flags[BeamCurve1.Flag] or 0.5
+		
+		local lifetime = Library.Flags[BeamLifetime.Flag] or 5
+		debris:AddItem(beam_part, lifetime)
+	end
+	
+	BulletTracersToggle.Callback = function(state) end
+	
+	-- Connect bullet tracer to gun beams (this would need to hook into the game's bullet system)
+	-- For now, it's set up and ready to be called when a bullet is fired
+	
+	-- Note: Full ESP system (names, boxes, health bars, etc.) would require Drawing API
+	-- which is more complex. The Highlight-based ESP chams are implemented above.
+	-- Full ESP drawing implementation can be added separately if needed.
 end
