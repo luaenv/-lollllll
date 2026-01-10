@@ -1,4 +1,3 @@
-
 local Library = {};
 do
 	Library = {
