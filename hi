@@ -4589,17 +4589,18 @@ for i,v in next, game.Players.LocalPlayer.Character:GetChildren() do
 end
 
 -- Main UI Window
-local Window = Library:Window({Name = "bit.tech", Amount = 6})
+local Window = Library:Window({Name = "bit.tech", Amount = 7})
 local Watermark = Library:Watermark({Name = "watermark | bit.tech | private"})
 local Indicator = Library:Indicator({Name = "New Indicator"})
 -- Indicator Options
 local TextIndicator = Indicator:NewValue({Name = "New Text", Value = "value here"})
 local BarIndicator = Indicator:NewBar({Name = "New Bar", Value = 10, Min = 0, Max = 100})
 --
-local Aiming = Window:Page({Name = "Aiming", Weapons = true})
+local Aiming = Window:Page({Name = "Aiming"})
 local Visuals = Window:Page({Name = "Visuals"})
 local Rage = Window:Page({Name = "Rage"})
 local AntiAim = Window:Page({Name = "Anti Aim"})
+local Misc = Window:Page({Name = "Misc"})
 local Players = Window:Page({Name = "Players"})
 local Settings = Window:Page({Name = "Settings"})
 -- Aiming Features
