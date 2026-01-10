@@ -80,8 +80,29 @@ do
 	Library.Pages.__index = Library.Pages
 	Library.Sections.__index = Library.Sections
 	local LocalPlayer = game:GetService('Players').LocalPlayer;
-	local Mouse = LocalPlayer:GetMouse();
 	local TweenService = game:GetService("TweenService");
+	local UserInputService = game:GetService("UserInputService");
+	
+	local Mouse = {
+		X = 0,
+		Y = 0
+	}
+	
+	local mouseMoveEvent = Instance.new("BindableEvent")
+	Mouse.Move = mouseMoveEvent.Event
+	
+	UserInputService.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement then
+			local mouseLocation = UserInputService:GetMouseLocation()
+			Mouse.X = mouseLocation.X
+			Mouse.Y = mouseLocation.Y
+			mouseMoveEvent:Fire(input)
+		end
+	end)
+	
+	local initialMouseLocation = UserInputService:GetMouseLocation()
+	Mouse.X = initialMouseLocation.X
+	Mouse.Y = initialMouseLocation.Y
 
 	do
 		function Library:Connection(Signal, Callback)
@@ -4530,9 +4551,6 @@ end;
 
 -- Local Variables
 local Flags = Library.Flags
-local Pointers = Library.Pointers
-local Utility = Library.Utility
-
 local Bodyparts = {}
 
 local function updateBodyparts()
@@ -5728,7 +5746,21 @@ do
 	
 	local lp = players.LocalPlayer
 	local camera = ws.CurrentCamera
-	local mouse = lp:GetMouse()
+	local mouse = {
+		X = 0,
+		Y = 0
+	}
+	local uis = game:GetService("UserInputService")
+	uis.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement then
+			local mouseLocation = uis:GetMouseLocation()
+			mouse.X = mouseLocation.X
+			mouse.Y = mouseLocation.Y
+		end
+	end)
+	local initialMouseLocation = uis:GetMouseLocation()
+	mouse.X = initialMouseLocation.X
+	mouse.Y = initialMouseLocation.Y
 	local gui_offset = game:GetService("GuiService"):GetGuiInset().Y
 	
 	local vec2 = Vector2.new
