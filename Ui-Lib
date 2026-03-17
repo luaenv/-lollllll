@@ -1,5 +1,5 @@
 --[[
-    Made by samet
+    Made by Jairo
 
     Assign different flags to each element to prevent from configs overriding eachother
     Example script is at the bottom
@@ -4929,7 +4929,7 @@ local Window = Library:Window({
     FadeSpeed = 0.25
 })
 
-local Watermark = Library:Watermark("thugsense ~ ".. os.date("%b %d %Y") .. " ~ ".. game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name)
+local Watermark = Library:Watermark("tubby.lol ~ ".. os.date("%b %d %Y") .. " ~ ".. game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name)
 local KeybindList = Library:KeybindList()
 
 Watermark:SetVisibility(false)
