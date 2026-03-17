@@ -2460,7 +2460,8 @@ local Library do
             Name = Data.Name or Data.name or "Page",
             Columns = Data.Columns or Data.columns or 2,
 
-            HasSubtabs = Data.Subtabs or Data.subtabs or false,
+            -- Support both 'Subtabs' (original) and 'SubTabs' (used in some scripts)
+            HasSubtabs = Data.Subtabs or Data.SubTabs or Data.subtabs or false,
 
             Active = false,
             ColumnsData = { },
